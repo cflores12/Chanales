@@ -1,11 +1,110 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const projects = [
+	{ name: 'HabitFlow', description: 'A minimal habit tracker for a better you.', detail: 'Track habits, build consistency, and visualize your progress with a clean and simple interface.', stack: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Prisma'], accent: 'mint', url: 'https://github.com/' },
+	{ name: 'CityExplorer', description: 'Discover cities through data.', detail: 'An interactive web app for exploring cities with maps, attractions, and real-time data.', stack: ['React', 'Node.js', 'Mapbox', 'PostgreSQL'], accent: 'blue', url: 'https://github.com/' },
+	{ name: 'NoteNest', description: 'A clean and powerful note-taking app.', detail: 'Organize your thoughts with a fast, minimalist editor that works across all devices.', stack: ['Next.js', 'TypeScript', 'Supabase', 'Tailwind CSS'], accent: 'lavender', url: 'https://github.com/' },
+];
+
+const experience = [
+	{ years: '2024 – Present', role: 'Software Engineer', company: 'Tech Company', detail: 'Building and maintaining web applications used by thousands of users. Working with React, TypeScript, and cloud technologies to deliver high-quality features.' },
+	{ years: '2022 – 2024', role: 'Frontend Developer', company: 'Another Company', detail: 'Developed and improved user-facing features for a SaaS platform. Collaborated with designers and product managers to ship clean, responsive interfaces.' },
+	{ years: '2021 – 2022', role: 'Software Engineering Intern', company: 'Startup Inc.', detail: 'Built internal tools to support the engineering team. Worked with React, Firebase, and Python. Learned a ton and fell even more in love with development.' },
+];
+
+const skills = ['JavaScript', 'TypeScript', 'React', 'Next.js', 'Node.js', 'Python', 'Tailwind CSS', 'PostgreSQL', 'Git'];
 ---
 
 <Layout>
-	<Welcome />
+	<div class="site-shell">
+		<header class="site-header">
+			<a class="brand" href="#home" aria-label="Alex Chen home"><span class="brand-mark">AC</span><span>Alex Chen</span></a>
+			<nav aria-label="Primary navigation"><a class="active" href="#home">01. Home</a><a href="#projects">02. Projects</a><a href="#experience">03. Experience</a><a href="#about">04. About</a><a href="#contact">05. Contact</a></nav>
+			<div class="header-tools"><button class="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle theme">◐</button><span class="header-note">Building a better web<br />one commit at a time.</span></div>
+		</header>
+
+		<main>
+			<section class="hero section-frame" id="home"><div class="hero-copy"><p class="eyebrow">Hello, I'm</p><h1>Alex <span>Chen</span></h1><h2>Software Developer</h2><p class="lede">I build thoughtful, well-crafted web applications that solve real problems. I'm passionate about clean code, great user experiences, and the intersection of technology and everyday life.</p><div class="hero-actions"><a class="button primary" href="#projects">&lt;/&gt;&nbsp; View Projects <span>→</span></a><a class="button" href="#contact">▣&nbsp; Contact Me</a></div></div><div class="hero-art"><img class="hero-image" src="/hero-workspace.png" data-dark-src="/hero-workspace.png" data-light-src="/hero-workspace-light.png" alt="Pixel art developer working at a desk beside a city window" /></div></section>
+
+			<section class="section-frame projects-section" id="projects"><div class="section-heading"><p class="eyebrow">02. Featured Projects</p><a href="#contact">View all projects&nbsp; →</a></div><div class="project-grid">{projects.map((project) => <article class={`project-card ${project.accent}`}><div class="project-preview"><div class="preview-window"><span></span><strong>{project.name}</strong><small>● ● ● ● ●</small></div></div><div class="project-body"><h3>{project.name}</h3><p>{project.description}</p><p class="detail">{project.detail}</p><div class="tags">{project.stack.map((item) => <span>{item}</span>)}</div><a class="project-link" href={project.url} target="_blank" rel="noreferrer">View Project&nbsp; →</a></div></article>)}</div></section>
+
+			<section class="section-frame experience-section" id="experience"><p class="eyebrow">03. Experience</p><div class="timeline">{experience.map((item) => <article class="timeline-item"><time>{item.years}</time><div><h3>{item.role}</h3><p class="company">{item.company}</p><p>{item.detail}</p></div></article>)}</div></section>
+
+			<section class="split-section section-frame" id="about"><div class="about-panel"><p class="eyebrow">04. About</p><p>I'm Alex Chen, a software developer who enjoys turning ideas into useful, human-centered web experiences. I'm always learning, whether it's a new framework, a better way to solve a problem, or something outside of tech.</p><p>Outside of coding, you'll usually find me reading, listening to music, exploring new places, or working on a side project.</p><div class="note">❝&nbsp; Curious minds build brighter tomorrows. <span>▰</span></div></div><div class="skills-panel"><p class="eyebrow">Tech I work with</p><div class="skills">{skills.map((skill, index) => <span><b>{['JS', 'TS', '⚛', 'N', 'N', '🐍', '≈', '◉', '◆'][index]}</b>{skill}</span>)}</div></div></section>
+
+			<section class="contact-section section-frame" id="contact"><div><p class="eyebrow">05. Get in touch</p><h2>Let's build something great together.</h2><p>I'm always open to new opportunities, interesting projects, or just a friendly chat.</p></div><div class="contact-links"><a href="mailto:alex.chen@example.com"><b>✉</b><span>Email</span><small>alex.chen@example.com</small><i>→</i></a><a href="https://github.com/" target="_blank" rel="noreferrer"><b>◉</b><span>GitHub</span><small>github.com/alexchen</small><i>→</i></a><a href="https://linkedin.com/" target="_blank" rel="noreferrer"><b>in</b><span>LinkedIn</span><small>linkedin.com/in/alexchen</small><i>→</i></a></div></section>
+		</main>
+
+		<footer><div><strong>Alex Chen</strong><small>Software Developer</small></div><div class="footer-nav"><a href="#home">Home</a><a href="#projects">Projects</a><a href="#experience">Experience</a><a href="#about">About</a><a href="#contact">Contact</a></div><small>Built with curiosity.<br />© 2025 Alex Chen. All rights reserved.</small></footer>
+	</div>
 </Layout>
+
+<script>
+	const toggle = document.querySelector('.theme-toggle');
+	const heroImage = document.querySelector('.hero-image');
+	const savedTheme = localStorage.getItem('alex-theme');
+	if (savedTheme) document.body.dataset.theme = savedTheme;
+	const updateHeroImage = () => { if (heroImage instanceof HTMLImageElement) heroImage.src = heroImage.dataset[document.body.dataset.theme === 'light' ? 'lightSrc' : 'darkSrc'] ?? heroImage.src; };
+	updateHeroImage();
+	toggle?.addEventListener('click', () => { const nextTheme = document.body.dataset.theme === 'light' ? 'dark' : 'light'; document.body.dataset.theme = nextTheme; localStorage.setItem('alex-theme', nextTheme); updateHeroImage(); });
+</script>
+
+<style>
+	:global(:root) { --bg: #07121f; --surface: #0a1929; --surface-soft: #0d2032; --line: #173853; --line-bright: #24587e; --text: #dce9f7; --muted: #7890a7; --blue: #42a9ff; --cyan: #5dd3ff; }
+	:global(body[data-theme='light']) { --bg: #e8f0f3; --surface: #f5f9f9; --surface-soft: #d9ebef; --line: #a7c7d1; --line-bright: #5e9eb2; --text: #102b3d; --muted: #557182; --blue: #087ec6; --cyan: #087e9f; }
+	:global(body) { background: var(--bg); transition: background .25s, color .25s; } .site-shell { overflow-x: clip; background: radial-gradient(circle at 80% 10%, color-mix(in srgb, var(--blue) 7%, transparent), transparent 28rem), repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--line) 12%, transparent) 4px); }
+	.site-header, .section-frame, footer { width: min(100%, 1180px); margin-inline: auto; } .site-header { position: sticky; top: 0; z-index: 10; min-height: 70px; padding: 0 34px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); } .brand { display: flex; align-items: center; gap: 14px; font-size: 16px; font-weight: 700; text-decoration: none; white-space: nowrap; } .brand-mark { display: grid; place-items: center; width: 30px; height: 27px; color: var(--cyan); border: 1px solid var(--cyan); font-size: 12px; }
+	nav { display: flex; gap: 25px; margin-left: auto; margin-right: 32px; } nav a, .header-note, .footer-nav a { color: var(--muted); font-size: 10px; text-decoration: none; } nav a:hover, nav a.active, .footer-nav a:hover { color: var(--cyan); } nav a.active { border-bottom: 1px solid var(--blue); padding-bottom: 8px; } .header-tools { display: flex; align-items: center; gap: 20px; } .theme-toggle { width: 38px; height: 38px; border: 1px solid var(--line); background: var(--surface); color: var(--cyan); cursor: pointer; font-size: 17px; } .header-note { border-left: 1px solid var(--line); padding-left: 20px; line-height: 1.35; font-size: 9px; }
+	.hero { min-height: 390px; padding: 48px 34px 26px; display: grid; grid-template-columns: 1fr 1.25fr; align-items: center; border-bottom: 1px solid var(--line); } .hero-copy { max-width: 500px; } .eyebrow { margin: 0 0 13px; color: var(--cyan); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; } .eyebrow::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 10px; background: var(--blue); } h1 { margin: 0; color: var(--text); font-family: Georgia, serif; font-size: clamp(3.1rem, 6vw, 5.2rem); line-height: .95; letter-spacing: 1px; } h1 span { color: var(--blue); } h2 { margin: 7px 0 14px; color: var(--text); font-family: Georgia, serif; font-size: 22px; } .lede { max-width: 445px; color: var(--muted); font-size: 13px; line-height: 1.65; } .hero-actions { display: flex; gap: 13px; margin-top: 23px; } .button { display: inline-flex; align-items: center; gap: 8px; padding: 11px 17px; border: 1px solid var(--blue); color: var(--text); font-size: 11px; text-decoration: none; } .button:hover { background: color-mix(in srgb, var(--blue) 16%, transparent); } .button.primary { background: var(--blue); color: #061525; font-weight: 700; } .button span { font-size: 16px; }
+	.hero-art { max-width: 590px; justify-self: end; width: 100%; overflow: hidden; } .hero-art img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; image-rendering: pixelated; }
+	.projects-section, .experience-section { padding: 26px 34px 30px; border-bottom: 1px solid var(--line); } .section-heading { display: flex; align-items: center; justify-content: space-between; } .section-heading a { color: var(--cyan); font-size: 10px; text-decoration: none; } .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; } .project-card { border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 80%, transparent); transition: transform .2s, border-color .2s; } .project-card:hover { transform: translateY(-4px); border-color: var(--blue); } .project-preview { height: 120px; margin: 10px; display: grid; place-items: center; background: linear-gradient(135deg, #203f59, #8aaec0); } .blue .project-preview { background: linear-gradient(135deg, #193c67, #345f87); } .lavender .project-preview { background: linear-gradient(135deg, #d6e0ee, #8da8be); } .preview-window { width: 77%; height: 70%; position: relative; background: #f4f6f5; color: #253647; padding: 22px 10px 5px; box-shadow: 5px 5px 0 #263b4d; font-family: Arial, sans-serif; } .preview-window span { position: absolute; top: 7px; left: 8px; width: 5px; height: 5px; background: #4ea4dc; box-shadow: 9px 0 #e1b36b, 18px 0 #88bea2; } .preview-window strong { display: block; font-size: 9px; } .preview-window small { color: #64b99e; font-size: 7px; } .project-body { padding: 3px 13px 14px; } .project-body h3 { margin: 0; font-size: 15px; } .project-body p { margin: 5px 0; color: var(--muted); font-size: 11px; line-height: 1.4; } .project-body .detail { font-size: 10px; } .tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0 14px; } .tags span { padding: 4px 6px; color: var(--muted); background: var(--surface-soft); font-size: 8px; } .project-link { color: var(--cyan); font-size: 10px; text-decoration: none; }
+	.timeline { max-width: 880px; margin-top: 7px; } .timeline-item { display: grid; grid-template-columns: 155px 1fr; gap: 30px; padding: 13px 0 13px 20px; border-left: 1px solid var(--line-bright); position: relative; } .timeline-item::before { content: ''; position: absolute; left: -4px; top: 17px; width: 7px; height: 7px; background: var(--blue); border-radius: 50%; } .timeline-item time { color: var(--cyan); font-size: 10px; } .timeline-item h3 { margin: 0 0 2px; font-size: 13px; } .timeline-item p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.45; } .timeline-item .company { color: var(--cyan); margin-bottom: 2px; }
+	.split-section { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); } .about-panel, .skills-panel { padding: 27px 34px; } .about-panel { border-right: 1px solid var(--line); } .about-panel > p { color: var(--muted); font-size: 10px; line-height: 1.55; max-width: 500px; } .note { display: flex; justify-content: space-between; margin-top: 15px; padding: 9px 11px; border: 1px solid var(--line-bright); color: var(--cyan); font-size: 9px; } .note span { color: #408c78; } .skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; } .skills span { display: flex; align-items: center; gap: 8px; padding: 7px; border: 1px solid var(--line); color: var(--muted); font-size: 9px; } .skills b { color: var(--blue); font-family: Arial, sans-serif; font-size: 12px; }
+	.contact-section { padding: 29px 34px 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; } .contact-section h2 { margin: 0 0 5px; font-size: 18px; } .contact-section > div > p:not(.eyebrow) { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.5; } .contact-links { display: grid; gap: 7px; align-content: center; } .contact-links a { display: grid; grid-template-columns: 25px 70px 1fr 20px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); color: var(--text); text-decoration: none; font-size: 10px; } .contact-links a:hover { border-color: var(--blue); } .contact-links b { color: var(--blue); font-family: Arial, sans-serif; } .contact-links small { color: var(--cyan); font-size: 9px; } .contact-links i { color: var(--cyan); font-style: normal; text-align: right; }
+	footer { padding: 20px 34px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); color: var(--muted); } footer strong, footer small { display: block; } footer strong { color: var(--text); font-size: 12px; } footer small { font-size: 8px; line-height: 1.5; } .footer-nav { display: flex; gap: 26px; }
+	@media (max-width: 800px) { .site-header { padding: 14px 20px; flex-wrap: wrap; gap: 16px; } .site-header nav { order: 3; width: 100%; margin: 0; justify-content: space-between; gap: 8px; overflow-x: auto; } .header-note { display: none; } .hero { padding: 43px 20px 28px; grid-template-columns: 1fr; gap: 35px; } .hero-art { justify-self: stretch; max-width: none; } .projects-section, .experience-section, .about-panel, .skills-panel, .contact-section { padding-inline: 20px; } .project-grid { grid-template-columns: 1fr; } .split-section, .contact-section { grid-template-columns: 1fr; gap: 0; } .about-panel { border-right: 0; border-bottom: 1px solid var(--line); } .contact-links { margin-top: 25px; } footer { padding-inline: 20px; gap: 18px; align-items: flex-start; } .footer-nav { display: none; } }
+	@media (max-width: 500px) { h1 { font-size: 3.2rem; } .hero-actions { flex-wrap: wrap; } .hero-art { height: 235px; } .timeline-item { grid-template-columns: 1fr; gap: 5px; } .contact-links a { grid-template-columns: 25px 60px 1fr 15px; } .contact-links small { overflow: hidden; text-overflow: ellipsis; } .skills { grid-template-columns: repeat(2, 1fr); } }
+	@media (prefers-reduced-motion: reduce) { :global(*) { scroll-behavior: auto !important; transition-duration: .01ms !important; } .project-card:hover { transform: none; } }
+
+	.site-header, .section-frame, footer { width: 100%; max-width: none; padding-inline: max(34px, calc((100% - 1112px) / 2)); }
+	.site-header { min-height: 76px; }
+	.hero { min-height: 540px; padding-top: 78px; padding-bottom: 62px; gap: 54px; }
+	.hero-copy { max-width: 540px; }
+	h1 { font-size: clamp(3.8rem, 7vw, 6.2rem); }
+	.hero-art { max-width: 650px; }
+	.projects-section, .experience-section { padding-top: 58px; padding-bottom: 64px; }
+	.projects-section { background: color-mix(in srgb, var(--surface) 38%, transparent); }
+	.experience-section { background: color-mix(in srgb, var(--bg) 72%, var(--surface)); }
+	.section-heading { margin-bottom: 26px; }
+	.project-grid { gap: 24px; }
+	.project-preview { height: 175px; margin: 14px; }
+	.project-body { padding: 9px 18px 23px; }
+	.project-body h3 { font-size: 17px; }
+	.project-body p { font-size: 12px; line-height: 1.55; }
+	.project-body .detail { font-size: 11px; }
+	.tags { margin-top: 14px; margin-bottom: 19px; }
+	.timeline { margin-top: 25px; max-width: 980px; }
+	.timeline-item { padding-top: 22px; padding-bottom: 22px; }
+	.split-section { background: color-mix(in srgb, var(--surface) 38%, transparent); }
+	.about-panel, .skills-panel { padding-top: 58px; padding-bottom: 62px; }
+	.about-panel > p { font-size: 11px; line-height: 1.7; }
+	.contact-section { padding-top: 64px; padding-bottom: 72px; min-height: 300px; }
+	footer { padding-top: 30px; padding-bottom: 30px; }
+
+	@media (max-width: 800px) {
+		.site-header, .section-frame, footer { padding-inline: 20px; }
+		.hero { min-height: 0; padding-top: 58px; padding-bottom: 48px; gap: 46px; }
+		.projects-section, .experience-section { padding-top: 46px; padding-bottom: 52px; }
+		.project-grid { gap: 24px; }
+		.project-preview { height: 190px; }
+		.about-panel, .skills-panel { padding-top: 46px; padding-bottom: 50px; }
+		.contact-section { padding-top: 52px; padding-bottom: 58px; }
+	}
+
+	@media (max-width: 500px) {
+		.hero { padding-top: 46px; padding-bottom: 38px; }
+		h1 { font-size: 3.5rem; }
+		.project-preview { height: 160px; }
+	}
+</style>
