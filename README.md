@@ -60,16 +60,21 @@ npx astro dev stop
 /
 ├── public/                  # Favicons and hero artwork
 ├── src/
+│   ├── components/          # Page sections and the Midnight Deploy game
+│   ├── data/
+│   │   └── portfolio.ts     # Typed portfolio copy, links, and lists
 │   ├── layouts/
-│   │   └── Layout.astro    # Document shell and global styles
+│   │   └── Layout.astro     # Document shell and global styles
+│   ├── styles/
+│   │   └── global.css       # Theme tokens and shared base styles
 │   └── pages/
-│       └── index.astro     # Portfolio content, interactions, and page styles
+│       └── index.astro       # Portfolio page composition
 ├── astro.config.mjs        # Astro and icon integration configuration
 ├── package.json            # Dependencies and npm scripts
 └── tsconfig.json           # TypeScript configuration
 ```
 
-The portfolio copy and work-experience data are maintained near the top of `src/pages/index.astro`. Static images and favicons are stored in `public/`.
+Portfolio copy, links, work experience, and project data are maintained in `src/data/portfolio.ts`. Each page section owns its markup and scoped styles in `src/components/`. Static images and favicons are stored in `public/`.
 
 ## Production Build
 

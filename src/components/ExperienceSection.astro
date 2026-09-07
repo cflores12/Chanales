@@ -1,0 +1,156 @@
+---
+import type { ExperienceItem } from '../data/portfolio';
+import SectionEyebrow from './SectionEyebrow.astro';
+
+interface Props {
+	items: readonly ExperienceItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="experience-section section-frame" id="experience">
+	<SectionEyebrow label="03. Experience" />
+
+	<div class="timeline">
+		{
+			items.map((item) => (
+				<article class="timeline-item">
+					<h3>
+						{item.role} <span class="at-company">@ {item.company}</span>
+					</h3>
+					<time>{item.date}</time>
+					<ul class="job-highlights">
+						{item.highlights.map((highlight) => <li>{highlight}</li>)}
+					</ul>
+				</article>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.experience-section {
+		padding-top: 100px;
+		padding-bottom: 112px;
+		border-bottom: 1px solid var(--line);
+		background: color-mix(in srgb, var(--bg) 72%, var(--surface));
+	}
+
+	.timeline {
+		max-width: 980px;
+		margin-top: 42px;
+		padding-left: 28px;
+		border-left: 1px solid var(--line-bright);
+	}
+
+	.timeline-item {
+		position: relative;
+		padding: 32px 0 32px 26px;
+	}
+
+	.timeline-item:last-child {
+		padding-bottom: 0;
+	}
+
+	.timeline-item::before {
+		content: '';
+		position: absolute;
+		top: 5px;
+		left: -33px;
+		width: 9px;
+		height: 9px;
+		border: 3px solid var(--bg);
+		border-radius: 50%;
+		background: var(--blue);
+		box-shadow: 0 0 0 1px var(--blue);
+	}
+
+	.timeline-item h3 {
+		margin: 0 0 7px;
+		color: var(--job-title);
+		font-size: 18px;
+		line-height: 1.25;
+	}
+
+	.at-company {
+		color: var(--cyan);
+		font-weight: 600;
+	}
+
+	.timeline-item time {
+		display: block;
+		margin: 7px 0 19px;
+		color: var(--cyan);
+		font-size: 14px;
+		font-weight: 700;
+	}
+
+	.job-highlights {
+		margin: 0;
+		padding: 0;
+		color: var(--muted);
+		font-size: 14px;
+		line-height: 1.7;
+		list-style: none;
+	}
+
+	.job-highlights li {
+		position: relative;
+		padding-left: 22px;
+	}
+
+	.job-highlights li::before {
+		content: '';
+		position: absolute;
+		top: 0.65em;
+		left: 2px;
+		width: 7px;
+		height: 7px;
+		border: 1px solid var(--cyan);
+		background: color-mix(in srgb, var(--blue) 45%, transparent);
+		box-shadow: 3px 3px 0 color-mix(in srgb, var(--blue) 22%, transparent);
+	}
+
+	.job-highlights li + li {
+		margin-top: 12px;
+	}
+
+	@media (max-width: 800px) {
+		.experience-section {
+			padding-top: 76px;
+			padding-bottom: 84px;
+		}
+
+		.timeline {
+			margin-top: 34px;
+		}
+
+		.timeline-item {
+			padding-top: 27px;
+			padding-bottom: 27px;
+		}
+	}
+
+	@media (max-width: 500px) {
+		.experience-section {
+			padding-top: 60px;
+			padding-bottom: 68px;
+		}
+
+		.timeline {
+			margin-top: 28px;
+			padding-left: 19px;
+		}
+
+		.timeline-item {
+			padding-top: 24px;
+			padding-bottom: 24px;
+			padding-left: 20px;
+		}
+
+		.timeline-item::before {
+			left: -24px;
+		}
+	}
+</style>

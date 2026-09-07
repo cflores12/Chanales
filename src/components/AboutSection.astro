@@ -1,0 +1,159 @@
+---
+import { Image } from 'astro:assets';
+import aboutPortrait from '../assets/about-portrait.jpg';
+import type { Profile } from '../data/portfolio';
+import SectionEyebrow from './SectionEyebrow.astro';
+
+interface Props {
+	paragraphs: Profile['about'];
+	techStack: readonly string[];
+	portraitAlt: Profile['portraitAlt'];
+}
+
+const { paragraphs, techStack, portraitAlt } = Astro.props;
+---
+
+<section class="about-section section-frame" id="about">
+	<div class="about-copy">
+		<SectionEyebrow label="02. About" />
+		{paragraphs.map((paragraph) => <p class="about-description">{paragraph}</p>)}
+
+		<div class="about-toolkit">
+			<h2>Core toolkit</h2>
+			<ul>
+				{techStack.map((technology) => <li>{technology}</li>)}
+			</ul>
+		</div>
+	</div>
+
+	<div class="about-portrait-panel">
+		<div class="about-portrait-frame">
+			<Image
+				class="about-portrait"
+				src={aboutPortrait}
+				alt={portraitAlt}
+				layout="constrained"
+				loading="lazy"
+				decoding="async"
+			/>
+		</div>
+	</div>
+</section>
+
+<style>
+	.about-section {
+		display: grid;
+		grid-template-columns: minmax(0, 1.5fr) minmax(220px, 0.7fr);
+		gap: 96px;
+		padding-top: 104px;
+		padding-bottom: 108px;
+		border-bottom: 1px solid var(--line);
+		background: color-mix(in srgb, var(--surface) 34%, transparent);
+	}
+
+	.about-description {
+		max-width: 700px;
+		margin: 0 0 18px;
+		color: var(--muted);
+		font-size: 17px;
+		line-height: 1.75;
+	}
+
+	.about-toolkit {
+		margin-top: 32px;
+	}
+
+	.about-toolkit h2 {
+		margin: 0 0 14px;
+		color: var(--cyan);
+		font-family: 'Courier New', Courier, monospace;
+		font-size: 12px;
+		letter-spacing: 2px;
+		text-transform: uppercase;
+	}
+
+	.about-toolkit ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.about-toolkit li {
+		padding: 8px 12px;
+		border: 1px solid var(--line-bright);
+		background: color-mix(in srgb, var(--surface-soft) 62%, transparent);
+		color: var(--text);
+		font-family: 'Courier New', Courier, monospace;
+		font-size: 12px;
+	}
+
+	.about-portrait-panel {
+		display: grid;
+		align-items: center;
+		padding-left: 26px;
+		border-left: 1px solid var(--line-bright);
+	}
+
+	.about-portrait-frame {
+		position: relative;
+		width: 100%;
+		max-width: 420px;
+		aspect-ratio: 4 / 5;
+		overflow: hidden;
+		border: 1px solid var(--line-bright);
+		background: var(--surface-soft);
+		transition: transform 0.2s, border-color 0.2s;
+	}
+
+	.about-portrait {
+		display: block;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		object-fit: cover;
+		object-position: center bottom;
+		transform: scale(1.28);
+		transform-origin: 55% 100%;
+	}
+
+	.about-portrait-frame:hover {
+		border-color: var(--blue);
+		transform: translateY(-4px);
+	}
+
+	@media (max-width: 800px) {
+		.about-section {
+			grid-template-columns: 1fr;
+			gap: 52px;
+			padding-top: 76px;
+			padding-bottom: 80px;
+		}
+
+		.about-portrait-panel {
+			padding-top: 24px;
+			padding-left: 0;
+			border-top: 1px solid var(--line-bright);
+			border-left: 0;
+		}
+
+		.about-portrait-frame {
+			justify-self: center;
+		}
+	}
+
+	@media (max-width: 500px) {
+		.about-section {
+			padding-top: 60px;
+			padding-bottom: 64px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.about-portrait-frame:hover {
+			transform: none;
+		}
+	}
+</style>

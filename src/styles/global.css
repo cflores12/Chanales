@@ -1,0 +1,94 @@
+:root {
+	--bg: #07121f;
+	--surface: #0a1929;
+	--surface-soft: #0d2032;
+	--line: #214764;
+	--line-bright: #3b759b;
+	--text: #edf5ff;
+	--muted: #a5bdd0;
+	--blue: #42a9ff;
+	--cyan: #72d9ff;
+	--job-title: #edf5ff;
+	--body-text: #dce9f7;
+}
+
+:root[data-theme='light'] {
+	--bg: #e8f0f3;
+	--surface: #f5f9f9;
+	--surface-soft: #d9ebef;
+	--line: #9bbbc7;
+	--line-bright: #4c899d;
+	--text: #102b3d;
+	--muted: #3f5b6b;
+	--blue: #087ec6;
+	--cyan: #087e9f;
+	--job-title: #17384b;
+	--body-text: #102b3d;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	min-width: 320px;
+	background: var(--bg);
+}
+
+body {
+	min-height: 100vh;
+	color: var(--body-text);
+	font-family: 'Avenir Next', 'Segoe UI', sans-serif;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	transition: background 0.25s, color 0.25s;
+}
+
+a {
+	color: inherit;
+}
+
+button,
+a {
+	-webkit-tap-highlight-color: transparent;
+}
+
+a:focus-visible,
+button:focus-visible {
+	outline: 2px solid var(--cyan);
+	outline-offset: 4px;
+}
+
+::selection {
+	background: #37a8ff;
+	color: #07121f;
+}
+
+.site-shell {
+	overflow-x: clip;
+	background:
+		radial-gradient(circle at 80% 10%, color-mix(in srgb, var(--blue) 7%, transparent), transparent 28rem),
+		repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--line) 12%, transparent) 4px);
+}
+
+.section-frame {
+	width: 100%;
+	max-width: none;
+	margin-inline: auto;
+	padding-inline: max(34px, calc((100% - 1112px) / 2));
+}
+
+@media (max-width: 800px) {
+	.section-frame {
+		padding-inline: 20px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	* {
+		scroll-behavior: auto !important;
+		transition-duration: 0.01ms !important;
+	}
+}

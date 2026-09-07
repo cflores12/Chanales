@@ -1,0 +1,158 @@
+---
+import type { ProjectItem } from '../data/portfolio';
+import SectionEyebrow from './SectionEyebrow.astro';
+
+interface Props {
+	items: readonly ProjectItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<section class="projects-section section-frame" id="projects">
+	<div class="section-heading">
+		<SectionEyebrow label="04. Projects & Research" />
+	</div>
+
+	<div class="project-grid">
+		{
+			items.map((project) => (
+				<article class="project-card">
+					<div class="project-body">
+						<p class="project-meta">
+							{project.category} <span aria-hidden="true">·</span> {project.date}
+						</p>
+						<h2>{project.title}</h2>
+						<p class="project-description">{project.description}</p>
+
+						{project.link && (
+							<a class="project-link" href={project.link.href} target="_blank" rel="noreferrer">
+								{project.link.label} <span aria-hidden="true">↗</span>
+							</a>
+						)}
+
+						{project.status && (
+							<p class="project-status">
+								{project.status.label} <span aria-hidden="true">·</span> {project.status.detail}
+							</p>
+						)}
+					</div>
+				</article>
+			))
+		}
+	</div>
+</section>
+
+<style>
+	.projects-section {
+		padding-top: 100px;
+		padding-bottom: 108px;
+		border-bottom: 1px solid var(--line);
+		background: color-mix(in srgb, var(--surface) 38%, transparent);
+	}
+
+	.section-heading {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 26px;
+	}
+
+	.project-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
+	}
+
+	.project-card {
+		display: flex;
+		border: 1px solid var(--line);
+		background: color-mix(in srgb, var(--surface) 80%, transparent);
+		transition: transform 0.2s, border-color 0.2s;
+	}
+
+	.project-card:hover {
+		border-color: var(--blue);
+		transform: translateY(-4px);
+	}
+
+	.project-body {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		padding: 28px;
+	}
+
+	.project-meta {
+		margin: 0 0 18px;
+		color: var(--cyan);
+		font-family: 'Courier New', Courier, monospace;
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 1.5px;
+		text-transform: uppercase;
+	}
+
+	.project-card h2 {
+		margin: 0 0 14px;
+		color: var(--text);
+		font-family: Georgia, serif;
+		font-size: 22px;
+		line-height: 1.25;
+	}
+
+	.project-description {
+		flex: 1;
+		margin: 0;
+		color: var(--muted);
+		font-size: 14px;
+		line-height: 1.7;
+	}
+
+	.project-link,
+	.project-status {
+		margin-top: 24px;
+		font-family: 'Courier New', Courier, monospace;
+		font-size: 11px;
+	}
+
+	.project-link {
+		align-self: flex-start;
+		color: var(--cyan);
+		text-decoration: none;
+	}
+
+	.project-link:hover {
+		color: var(--text);
+	}
+
+	.project-status {
+		color: var(--muted);
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+	}
+
+	@media (max-width: 800px) {
+		.projects-section {
+			padding-top: 76px;
+			padding-bottom: 80px;
+		}
+
+		.project-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 500px) {
+		.projects-section {
+			padding-top: 60px;
+			padding-bottom: 64px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.project-card:hover {
+			transform: none;
+		}
+	}
+</style>

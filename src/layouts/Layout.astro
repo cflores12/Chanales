@@ -1,47 +1,52 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const {
+	title = 'Chanales Flores | Software Development Engineer',
+	description = 'Chanales Flores is a Software Development Engineer 2 building scalable software solutions.',
+} = Astro.props;
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/png" href="/hero-favicon.png" />
-		<meta name="description" content="Chanales Flores is a Software Development Engineer 2 building scalable software solutions." />
-		<title>Chanales Flores | Software Development Engineer</title>
+		<meta name="description" content={description} />
+		<title>{title}</title>
+		<script is:inline>
+			(() => {
+				const themeKey = 'chanales-theme';
+				const legacyThemeKey = 'alex-theme';
+
+				try {
+					let savedTheme = localStorage.getItem(themeKey);
+					const legacyTheme = localStorage.getItem(legacyThemeKey);
+
+					if (legacyTheme === 'dark' || legacyTheme === 'light') {
+						if (!savedTheme) {
+							savedTheme = legacyTheme;
+							localStorage.setItem(themeKey, legacyTheme);
+						}
+						localStorage.removeItem(legacyThemeKey);
+					}
+
+					if (savedTheme === 'dark' || savedTheme === 'light') {
+						document.documentElement.dataset.theme = savedTheme;
+					}
+				} catch {
+					// Keep the default dark theme when storage is unavailable.
+				}
+			})();
+		</script>
 	</head>
-	<body data-theme="dark">
+	<body>
 		<slot />
 	</body>
 </html>
-
-<style>
-	:global(*) {
-		box-sizing: border-box;
-	}
-
-	html,
-	body {
-		margin: 0;
-		min-width: 320px;
-		background: #07121f;
-	}
-
-	body {
-		min-height: 100vh;
-		color: #dce9f7;
-		font-family: 'Avenir Next', 'Segoe UI', sans-serif;
-		-webkit-font-smoothing: antialiased;
-	}
-
-	:global(a) {
-		color: inherit;
-	}
-
-	:global(button),
-	:global(a) {
-		-webkit-tap-highlight-color: transparent;
-	}
-
-	:global(::selection) {
-		background: #37a8ff;
-		color: #07121f;
-	}
-</style>

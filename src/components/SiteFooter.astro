@@ -1,0 +1,79 @@
+---
+import type { NavItem, Profile } from '../data/portfolio';
+
+interface Props {
+	profile: Pick<Profile, 'name' | 'role'>;
+	navigation: readonly NavItem[];
+}
+
+const { profile, navigation } = Astro.props;
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer section-frame">
+	<div>
+		<strong>{profile.name}</strong>
+		<small>{profile.role}</small>
+	</div>
+
+	<div class="footer-nav">
+		{navigation.map((item) => <a href={item.href}>{item.shortLabel}</a>)}
+	</div>
+
+	<small>Built with curiosity.<br />© {currentYear} {profile.name}. All rights reserved.</small>
+</footer>
+
+<style>
+	.site-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding-top: 44px;
+		padding-bottom: 44px;
+		border-top: 1px solid var(--line);
+		color: var(--muted);
+	}
+
+	.site-footer strong,
+	.site-footer small {
+		display: block;
+	}
+
+	.site-footer strong {
+		color: var(--text);
+		font-size: 15px;
+	}
+
+	.site-footer small {
+		font-size: 11px;
+		line-height: 1.5;
+	}
+
+	.footer-nav {
+		display: flex;
+		gap: 26px;
+	}
+
+	.footer-nav a {
+		color: var(--muted);
+		font-size: 13px;
+		text-decoration: none;
+	}
+
+	.footer-nav a:hover {
+		color: var(--cyan);
+	}
+
+	@media (max-width: 800px) {
+		.site-footer {
+			align-items: flex-start;
+			gap: 18px;
+			padding-top: 36px;
+			padding-bottom: 36px;
+		}
+
+		.footer-nav {
+			display: none;
+		}
+	}
+</style>
