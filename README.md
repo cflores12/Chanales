@@ -1,32 +1,83 @@
-# Alex Chen Portfolio
+# Chanales Flores Portfolio
 
-A single-page developer portfolio built with Astro. The current content is placeholder data based on the supplied visual reference.
+A responsive, single-page software engineering portfolio built with Astro. The site introduces Chanales Flores, highlights professional experience, and provides direct links to email, LinkedIn, and GitHub.
 
-## Project Structure
+## Features
 
-The page is organized around a small Astro shell:
+- Home, About, and Experience sections
+- Responsive desktop and mobile navigation
+- Light and dark themes with a persistent theme preference
+- Active navigation that follows the visible page section
+- Data-driven work-experience timeline
+- Custom pixel-art hero artwork for both themes
+- Accessible labels, keyboard focus states, and reduced-motion support
 
-```text
-/
-├── public/               # Static favicon assets
-├── src/layouts/          # Shared document shell and global styles
-├── src/pages/index.astro # Portfolio content and page styles
-└── package.json
+## Tech Stack
+
+- [Astro](https://astro.build/)
+- [Lucide](https://lucide.dev/) and [Astro Icon](https://www.astroicon.dev/) for icons
+- Component-scoped CSS and vanilla JavaScript
+
+## Requirements
+
+- Node.js 22.12.0 or newer
+- npm
+
+## Getting Started
+
+Install the dependencies:
+
+```sh
+npm install
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+Start the Astro development server in the background:
 
-The profile data, projects, experience, skills, and contact URLs live near the top of `src/pages/index.astro` so they can be replaced independently from the layout.
+```sh
+npx astro dev --background
+```
+
+Astro provides commands for managing the background server:
+
+```sh
+npx astro dev status
+npx astro dev logs
+npx astro dev stop
+```
 
 ## Commands
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install` | Install dependencies |
-| `npm run dev` | Start the local development server |
-| `npm run build` | Build the production site to `./dist/` |
+| Command | Action |
+| :--- | :--- |
+| `npm run dev` | Start the development server in the foreground |
+| `npm run build` | Build the production site in `dist/` |
 | `npm run preview` | Preview the production build locally |
+| `npm run astro -- <command>` | Run an Astro CLI command |
 
-The repository convention for a background development server is `astro dev --background`.
+## Project Structure
+
+```text
+/
+├── public/                  # Favicons and hero artwork
+├── src/
+│   ├── layouts/
+│   │   └── Layout.astro    # Document shell and global styles
+│   └── pages/
+│       └── index.astro     # Portfolio content, interactions, and page styles
+├── astro.config.mjs        # Astro and icon integration configuration
+├── package.json            # Dependencies and npm scripts
+└── tsconfig.json           # TypeScript configuration
+```
+
+The portfolio copy and work-experience data are maintained near the top of `src/pages/index.astro`. Static images and favicons are stored in `public/`.
+
+## Production Build
+
+Create and verify a production build before deployment:
+
+```sh
+npm run build
+npm run preview
+```
+
+The generated static site is written to `dist/` and can be deployed to any static hosting provider.
