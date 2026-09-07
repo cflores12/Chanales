@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { Mail, Menu, Moon, Sun } from '@lucide/astro';
+import { Gamepad2, Mail, Menu, Moon, Sun } from '@lucide/astro';
 import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
 import aboutPortrait from '../assets/about-portrait.jpg';
@@ -87,7 +87,27 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 		</header>
 
 		<main>
-			<section class="hero section-frame" id="home"><div class="hero-copy"><p class="terminal-intro">Hey, Chanales here.<span class="terminal-cursor" aria-hidden="true"></span></p><p class="lede">Software Engineer by day, curious builder by night. Based in New Jersey, I work on web applications for retail operations while spending my free time exploring different interests, experimenting with new technology, blogging, making art, and building small projects just to see where an idea can go.</p><div class="profile-actions"><a class="resume-button" href="#experience">View resume</a><a class="icon-button" href="mailto:florescareers28@gmail.com" aria-label="Email Chanales Flores" title="Email"><Mail size={17} stroke-width="1.7" /></a><a class="icon-button" href="https://www.linkedin.com/in/chanales-flores/" target="_blank" rel="noreferrer" aria-label="LinkedIn profile" title="LinkedIn"><Icon name="simple-icons:linkedin" size={17} /></a><a class="icon-button" href="https://github.com/cflores12" target="_blank" rel="noreferrer" aria-label="GitHub profile" title="GitHub"><Icon name="simple-icons:github" size={18} /></a><MidnightDeploy /></div></div><div class="hero-art"><img class="hero-image" src="/hero-workspace.png" data-dark-src="/hero-workspace.png" data-light-src="/hero-workspace-light.png" width="1672" height="941" alt="Pixel art developer working at a desk beside a city window" /></div></section>
+			<section class="hero section-frame" id="home" data-game-host>
+				<div class="hero-intro" data-hero-content>
+					<div class="hero-copy">
+						<p class="terminal-intro">Hey, Chanales here.<span class="terminal-cursor" aria-hidden="true"></span></p>
+						<p class="lede">Software Engineer by day, curious builder by night. Based in New Jersey, I work on web applications for retail operations while spending my free time exploring different interests, experimenting with new technology, blogging, making art, and building small projects just to see where an idea can go.</p>
+						<div class="profile-actions">
+							<a class="resume-button" href="#experience">View resume</a>
+							<a class="icon-button" href="mailto:florescareers28@gmail.com" aria-label="Email Chanales Flores" title="Email"><Mail size={17} stroke-width="1.7" /></a>
+							<a class="icon-button" href="https://www.linkedin.com/in/chanales-flores/" target="_blank" rel="noreferrer" aria-label="LinkedIn profile" title="LinkedIn"><Icon name="simple-icons:linkedin" size={17} /></a>
+							<a class="icon-button" href="https://github.com/cflores12" target="_blank" rel="noreferrer" aria-label="GitHub profile" title="GitHub"><Icon name="simple-icons:github" size={18} /></a>
+							<button class="midnight-trigger" type="button" aria-label="Play Midnight Deploy" title="Take a break" aria-controls="midnight-deploy-game" aria-expanded="false" data-game-open>
+								<Gamepad2 size={19} stroke-width="1.7" aria-hidden="true" />
+							</button>
+						</div>
+					</div>
+					<div class="hero-art"><img class="hero-image" src="/hero-workspace.png" data-dark-src="/hero-workspace.png" data-light-src="/hero-workspace-light.png" width="1672" height="941" alt="Pixel art developer working at a desk beside a city window" /></div>
+				</div>
+				<div class="hero-game" id="midnight-deploy-game" aria-hidden="true" inert data-game-view>
+					<MidnightDeploy />
+				</div>
+			</section>
 
 			<section class="about-section section-frame" id="about"><div class="about-copy"><p class="eyebrow">02. About</p><p>At Spencer’s &amp; Spirit, I build and maintain internal applications that help support retail operations across our stores. One of my recent projects was a web application for ordering supplies across more than 1,500 Spirit Halloween locations, used daily by over 600 field managers.</p><p>More recently, I’ve also been exploring AI integrations that use data from our internal applications to improve workflows, surface useful insights, and make retail operations more efficient.</p><div class="about-toolkit"><h2>Core toolkit</h2><ul>{techStack.map((technology) => <li>{technology}</li>)}</ul></div></div><div class="about-portrait-panel"><div class="about-portrait-frame"><Image class="about-portrait" src={aboutPortrait} alt="Chanales Flores standing in Akihabara, Tokyo" layout="constrained" loading="lazy" decoding="async" /></div></div></section>
 
@@ -303,5 +323,28 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 		.projects-section { padding-top: 60px; padding-bottom: 64px; }
 		.timeline { margin-top: 28px; }
 		.timeline-item { padding-top: 24px; padding-bottom: 24px; }
+	}
+
+	.hero { position: relative; display: block; overflow: hidden; overflow-anchor: none; scroll-margin-top: 76px; }
+	.hero-intro { position: relative; display: grid; grid-template-columns: 1fr 1.25fr; align-items: center; gap: 54px; width: 100%; opacity: 1; transform: translateY(0); visibility: visible; transition: opacity .22s ease, transform .22s ease, visibility 0s; }
+	.hero-game { position: absolute; top: 104px; right: 34px; left: 34px; opacity: 0; transform: translateY(14px); visibility: hidden; pointer-events: none; transition: opacity .22s ease, transform .22s ease, visibility 0s .22s; }
+	.hero.is-game-open .hero-intro { position: absolute; top: 104px; right: 34px; left: 34px; width: auto; opacity: 0; transform: translateY(-14px); visibility: hidden; pointer-events: none; transition: opacity .22s ease, transform .22s ease, visibility 0s .22s; }
+	.hero.is-game-open .hero-game { position: relative; top: auto; right: auto; left: auto; opacity: 1; transform: translateY(0); visibility: visible; pointer-events: auto; transition-delay: 0s; }
+	.midnight-trigger { display: inline-grid; place-items: center; width: 42px; height: 42px; padding: 0; border: 1px solid var(--line-bright); border-radius: 50%; background: transparent; color: var(--text); cursor: pointer; transition: background .2s, color .2s, border-color .2s, transform .2s; }
+	.midnight-trigger:hover { border-color: var(--cyan); background: color-mix(in srgb, var(--blue) 12%, transparent); color: var(--cyan); transform: translateY(-2px); }
+
+	@media (max-width: 800px) {
+		.hero-intro { grid-template-columns: 1fr; gap: 46px; }
+		.hero-game, .hero.is-game-open .hero-intro { top: 76px; right: 20px; left: 20px; }
+	}
+
+	@media (max-width: 500px) {
+		.hero-intro { gap: 35px; }
+		.hero-game, .hero.is-game-open .hero-intro { top: 60px; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero-intro, .hero-game, .hero.is-game-open .hero-intro, .hero.is-game-open .hero-game, .midnight-trigger { transition: none; }
+		.hero-intro, .hero-game, .hero.is-game-open .hero-intro, .hero.is-game-open .hero-game, .midnight-trigger:hover { transform: none; }
 	}
 </style>

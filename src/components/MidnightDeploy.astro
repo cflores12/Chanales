@@ -1,14 +1,10 @@
 ---
-import { Gamepad2, RotateCcw, X } from '@lucide/astro';
+import { RotateCcw, X } from '@lucide/astro';
 ---
 
 <div class="midnight-deploy" data-midnight-deploy>
-	<button class="midnight-trigger" type="button" aria-label="Play Midnight Deploy" title="Take a break" data-game-open>
-		<Gamepad2 size={19} stroke-width="1.7" aria-hidden="true" />
-	</button>
-
-	<dialog class="game-dialog" aria-labelledby="midnight-deploy-title" aria-describedby="midnight-deploy-help" data-game-dialog>
-		<div class="dialog-shell">
+	<div class="game-panel" role="region" aria-labelledby="midnight-deploy-title" aria-describedby="midnight-deploy-help">
+		<div class="game-shell">
 			<header class="game-header">
 				<div>
 					<p class="game-kicker">// after hours</p>
@@ -73,7 +69,7 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 				</div>
 			</footer>
 		</div>
-	</dialog>
+	</div>
 </div>
 
 <script>
@@ -88,8 +84,10 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 		if (root.dataset.ready === 'true') continue;
 		root.dataset.ready = 'true';
 
-		const dialog = root.querySelector<HTMLDialogElement>('[data-game-dialog]');
-		const openButton = root.querySelector<HTMLButtonElement>('[data-game-open]');
+		const host = root.closest<HTMLElement>('[data-game-host]');
+		const gameView = host?.querySelector<HTMLElement>('[data-game-view]');
+		const heroContent = host?.querySelector<HTMLElement>('[data-hero-content]');
+		const openButton = host?.querySelector<HTMLButtonElement>('[data-game-open]');
 		const canvas = root.querySelector<HTMLCanvasElement>('[data-game-canvas]');
 		const startScreen = root.querySelector<HTMLElement>('[data-start-screen]');
 		const winScreen = root.querySelector<HTMLElement>('[data-win-screen]');
@@ -103,7 +101,7 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 		const messageDisplay = root.querySelector<HTMLElement>('[data-game-message]');
 		const context = canvas?.getContext('2d');
 
-		if (!dialog || !openButton || !canvas || !context || !startScreen || !winScreen || !startButton) continue;
+		if (!host || !gameView || !heroContent || !openButton || !canvas || !context || !startScreen || !winScreen || !startButton) continue;
 
 		const WIDTH = 960;
 		const HEIGHT = 540;
@@ -131,13 +129,13 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 		];
 		const input = { left: false, right: false, jump: false, jumpQueued: false };
 		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+		let isOpen = false;
 		let started = false;
 		let won = false;
 		let elapsed = 0;
 		let lastFrame = 0;
 		let animationFrame = 0;
 		let respawnGlow = 0;
-		let previousBodyOverflow = '';
 
 		const intersects = (a: Rectangle, b: Rectangle) =>
 			a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
@@ -199,7 +197,7 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 		};
 
 		const startGame = () => {
-			if (!dialog.open) return;
+			if (!isOpen) return;
 			started = true;
 			won = false;
 			startScreen.hidden = true;
@@ -454,7 +452,7 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 		};
 
 		const frame = (timestamp: number) => {
-			if (!dialog.open || !started || won || document.hidden) {
+			if (!isOpen || !started || won || document.hidden) {
 				animationFrame = 0;
 				return;
 			}
@@ -467,17 +465,29 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 		};
 
 		const startLoop = () => {
-			if (animationFrame || !dialog.open || !started || won || document.hidden) return;
+			if (animationFrame || !isOpen || !started || won || document.hidden) return;
 			lastFrame = 0;
 			animationFrame = requestAnimationFrame(frame);
 		};
 
 		const closeGame = () => {
-			if (dialog.open) dialog.close();
+			if (!isOpen) return;
+			cancelAnimationFrame(animationFrame);
+			animationFrame = 0;
+			started = false;
+			isOpen = false;
+			clearInput();
+			host.classList.remove('is-game-open');
+			heroContent.inert = false;
+			heroContent.setAttribute('aria-hidden', 'false');
+			gameView.inert = true;
+			gameView.setAttribute('aria-hidden', 'true');
+			openButton.setAttribute('aria-expanded', 'false');
+			openButton.focus({ preventScroll: true });
 		};
 
 		const setKeyboardInput = (event: KeyboardEvent, pressed: boolean) => {
-			if (!dialog.open || !started || won) return;
+			if (!isOpen || !started || won) return;
 			const key = event.code;
 			if (!['KeyA', 'KeyD', 'KeyW', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Space'].includes(key)) return;
 			event.preventDefault();
@@ -491,23 +501,18 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 
 		openButton.addEventListener('click', () => {
 			resetGame();
-			previousBodyOverflow = document.body.style.overflow;
-			document.body.style.overflow = 'hidden';
-			dialog.showModal();
+			isOpen = true;
+			host.classList.add('is-game-open');
+			heroContent.inert = true;
+			heroContent.setAttribute('aria-hidden', 'true');
+			gameView.inert = false;
+			gameView.setAttribute('aria-hidden', 'false');
+			openButton.setAttribute('aria-expanded', 'true');
 			startButton.focus({ preventScroll: true });
 		});
 		startButton.addEventListener('click', startGame);
 		restartButtons.forEach((button) => button.addEventListener('click', restartGame));
 		closeButtons.forEach((button) => button.addEventListener('click', closeGame));
-		dialog.addEventListener('cancel', () => clearInput());
-		dialog.addEventListener('close', () => {
-			cancelAnimationFrame(animationFrame);
-			animationFrame = 0;
-			started = false;
-			clearInput();
-			document.body.style.overflow = previousBodyOverflow;
-			openButton.focus({ preventScroll: true });
-		});
 		document.addEventListener('visibilitychange', () => {
 			if (document.hidden) {
 				cancelAnimationFrame(animationFrame);
@@ -517,14 +522,21 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 				startLoop();
 			}
 		});
-		window.addEventListener('keydown', (event) => setKeyboardInput(event, true), { passive: false });
+		window.addEventListener('keydown', (event) => {
+			if (event.key === 'Escape' && isOpen) {
+				event.preventDefault();
+				closeGame();
+				return;
+			}
+			setKeyboardInput(event, true);
+		}, { passive: false });
 		window.addEventListener('keyup', (event) => setKeyboardInput(event, false), { passive: false });
 		window.addEventListener('blur', clearInput);
 
 		root.querySelectorAll<HTMLButtonElement>('[data-control]').forEach((button) => {
 			const control = button.dataset.control as 'left' | 'right' | 'jump';
 			const press = (event: PointerEvent) => {
-				if (!dialog.open || !started || won) return;
+				if (!isOpen || !started || won) return;
 				event.preventDefault();
 				button.setPointerCapture(event.pointerId);
 				if (control === 'jump') {
@@ -555,12 +567,9 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 </script>
 
 <style>
-	.midnight-deploy { display: contents; }
-	.midnight-trigger { display: inline-grid; place-items: center; width: 42px; height: 42px; padding: 0; border: 1px solid var(--line-bright); border-radius: 50%; background: transparent; color: var(--text); cursor: pointer; transition: background .2s, color .2s, border-color .2s, transform .2s; }
-	.midnight-trigger:hover { border-color: var(--cyan); background: color-mix(in srgb, var(--blue) 12%, transparent); color: var(--cyan); transform: translateY(-2px); }
-	.game-dialog { width: min(1060px, calc(100vw - 28px)); max-height: calc(100dvh - 28px); margin: auto; padding: 0; overflow: auto; border: 1px solid var(--line-bright); background: var(--surface); color: var(--text); box-shadow: 0 28px 90px rgba(0, 0, 0, .58), 0 0 0 1px rgba(114, 217, 255, .1); }
-	.game-dialog::backdrop { background: rgba(2, 8, 15, .82); backdrop-filter: blur(7px); }
-	.dialog-shell { padding: 20px; background: linear-gradient(180deg, color-mix(in srgb, var(--surface-soft) 72%, var(--surface)), var(--surface)); }
+	.midnight-deploy { width: 100%; scroll-margin-top: 86px; }
+	.game-panel { width: 100%; color: var(--text); }
+	.game-shell { width: 100%; }
 	.game-header, .game-hud, .game-footer, .game-help, .touch-controls { font-family: 'Courier New', Courier, monospace; }
 	.game-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 14px; }
 	.game-kicker { margin: 0 0 2px; color: var(--cyan); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
@@ -600,16 +609,12 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 	.game-footer > div { display: flex; flex: 0 0 auto; gap: 8px; }
 	.text-control { display: inline-flex; align-items: center; gap: 6px; padding: 6px 8px; border: 0; background: transparent; color: var(--cyan); font: inherit; cursor: pointer; }
 	.text-control:hover { color: var(--text); }
-	:global(body[data-theme='light']) .game-dialog { box-shadow: 0 28px 90px rgba(3, 20, 31, .35); }
-
 	@media (hover: none), (pointer: coarse) {
 		.touch-controls { display: flex; }
 		.game-help { display: none; }
 	}
 
 	@media (max-width: 640px) {
-		.game-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
-		.dialog-shell { padding: 12px; }
 		.game-header { margin-bottom: 10px; }
 		.game-kicker { display: none; }
 		.game-hud { gap: 9px; padding: 8px; font-size: 9px; letter-spacing: .3px; }
@@ -626,8 +631,6 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 	}
 
 	@media (max-height: 700px) and (orientation: landscape) {
-		.game-dialog { width: min(900px, calc(100vw - 18px)); max-height: calc(100dvh - 12px); }
-		.dialog-shell { padding: 9px 12px; }
 		.game-header { margin-bottom: 7px; }
 		.game-kicker, .game-help, .game-footer > span { display: none; }
 		.game-header h2 { font-size: 18px; }
@@ -639,8 +642,4 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 		.touch-controls .jump-control { width: 92px; }
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.midnight-trigger { transition: none; }
-		.midnight-trigger:hover { transform: none; }
-	}
 </style>
