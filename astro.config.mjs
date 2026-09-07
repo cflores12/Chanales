@@ -5,5 +5,7 @@ import icon from 'astro-icon';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://cflores12.github.io',
+  base: '/Chanales',
   integrations: [icon()]
 });

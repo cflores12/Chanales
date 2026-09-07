@@ -9,6 +9,7 @@ interface Props {
 }
 
 const { profile } = Astro.props;
+const base = import.meta.env.BASE_URL;
 ---
 
 <section class="hero section-frame" id="home" data-game-host>
@@ -45,10 +46,10 @@ const { profile } = Astro.props;
 		<div class="hero-art">
 			<img
 				class="hero-image"
-				src="/hero-workspace.png"
+				src={`${base}/hero-workspace.png`}
 				data-theme-image
-				data-dark-src="/hero-workspace.png"
-				data-light-src="/hero-workspace-light.png"
+				data-dark-src={`${base}/hero-workspace.png`}
+				data-light-src={`${base}/hero-workspace-light.png`}
 				width="1672"
 				height="941"
 				alt="Pixel art developer working at a desk beside a city window"
