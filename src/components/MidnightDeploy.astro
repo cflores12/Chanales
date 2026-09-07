@@ -1,0 +1,646 @@
+---
+import { Gamepad2, RotateCcw, X } from '@lucide/astro';
+---
+
+<div class="midnight-deploy" data-midnight-deploy>
+	<button class="midnight-trigger" type="button" aria-label="Play Midnight Deploy" title="Take a break" data-game-open>
+		<Gamepad2 size={19} stroke-width="1.7" aria-hidden="true" />
+	</button>
+
+	<dialog class="game-dialog" aria-labelledby="midnight-deploy-title" aria-describedby="midnight-deploy-help" data-game-dialog>
+		<div class="dialog-shell">
+			<header class="game-header">
+				<div>
+					<p class="game-kicker">// after hours</p>
+					<h2 id="midnight-deploy-title">Midnight Deploy</h2>
+				</div>
+				<button class="close-icon" type="button" aria-label="Close Midnight Deploy" title="Close" data-game-close>
+					<X size={20} stroke-width="1.7" aria-hidden="true" />
+				</button>
+			</header>
+
+			<div class="game-hud" aria-label="Game status">
+				<span>TIME <strong data-game-time>00:00.0</strong></span>
+				<span>TOKENS <strong data-game-progress>0 / 4</strong></span>
+				<span class="terminal-state" data-terminal-state>TERMINAL LOCKED</span>
+			</div>
+
+			<div class="game-stage">
+				<canvas width="960" height="540" role="img" aria-label="Midnight Deploy pixel-art platform game" data-game-canvas>
+					Your browser does not support the canvas element required to play Midnight Deploy.
+				</canvas>
+
+				<div class="game-overlay start-screen" data-start-screen>
+					<div class="overlay-card">
+						<p class="overlay-eyebrow">DEPLOY WINDOW OPEN</p>
+						<h3>Ship before sunrise.</h3>
+						<p>Collect <strong>PLAN</strong>, <strong>CODE</strong>, <strong>BUILD</strong>, and <strong>REPEAT</strong>. Dodge the bugs, then reach the terminal.</p>
+						<button class="primary-control" type="button" data-game-start>Start game</button>
+					</div>
+				</div>
+
+				<div class="game-overlay win-screen" hidden data-win-screen>
+					<div class="overlay-card">
+						<p class="overlay-eyebrow">DEPLOYMENT COMPLETE</p>
+						<h3>It works on production.</h3>
+						<p>All four tokens delivered in <strong data-final-time>00:00.0</strong>.</p>
+						<div class="overlay-actions">
+							<button class="primary-control" type="button" data-win-restart>Play again</button>
+							<button class="secondary-control" type="button" data-win-close>Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<p class="game-help" id="midnight-deploy-help">
+				<span><kbd>A</kbd><kbd>D</kbd> or <kbd>←</kbd><kbd>→</kbd> move</span>
+				<span><kbd>W</kbd>, <kbd>↑</kbd>, or <kbd>Space</kbd> jump</span>
+			</p>
+
+			<div class="touch-controls" aria-label="Touch controls" data-touch-controls>
+				<div class="touch-directions">
+					<button type="button" aria-label="Move left" data-control="left">←</button>
+					<button type="button" aria-label="Move right" data-control="right">→</button>
+				</div>
+				<button class="jump-control" type="button" aria-label="Jump" data-control="jump">↑ <span>JUMP</span></button>
+			</div>
+
+			<footer class="game-footer">
+				<span aria-live="polite" data-game-message>Press Start game when you are ready.</span>
+				<div>
+					<button class="text-control" type="button" data-game-restart><RotateCcw size={14} stroke-width="1.8" aria-hidden="true" /> Restart</button>
+					<button class="text-control" type="button" data-game-close>Close</button>
+				</div>
+			</footer>
+		</div>
+	</dialog>
+</div>
+
+<script>
+	type Rectangle = { x: number; y: number; w: number; h: number };
+	type Platform = Rectangle & { accent?: boolean };
+	type Token = Rectangle & { label: string; collected: boolean; color: string };
+	type Bug = Rectangle & { minX: number; maxX: number; speed: number; direction: number };
+
+	const roots = document.querySelectorAll<HTMLElement>('[data-midnight-deploy]');
+
+	for (const root of roots) {
+		if (root.dataset.ready === 'true') continue;
+		root.dataset.ready = 'true';
+
+		const dialog = root.querySelector<HTMLDialogElement>('[data-game-dialog]');
+		const openButton = root.querySelector<HTMLButtonElement>('[data-game-open]');
+		const canvas = root.querySelector<HTMLCanvasElement>('[data-game-canvas]');
+		const startScreen = root.querySelector<HTMLElement>('[data-start-screen]');
+		const winScreen = root.querySelector<HTMLElement>('[data-win-screen]');
+		const startButton = root.querySelector<HTMLButtonElement>('[data-game-start]');
+		const restartButtons = root.querySelectorAll<HTMLButtonElement>('[data-game-restart], [data-win-restart]');
+		const closeButtons = root.querySelectorAll<HTMLButtonElement>('[data-game-close], [data-win-close]');
+		const timeDisplay = root.querySelector<HTMLElement>('[data-game-time]');
+		const finalTimeDisplay = root.querySelector<HTMLElement>('[data-final-time]');
+		const progressDisplay = root.querySelector<HTMLElement>('[data-game-progress]');
+		const terminalDisplay = root.querySelector<HTMLElement>('[data-terminal-state]');
+		const messageDisplay = root.querySelector<HTMLElement>('[data-game-message]');
+		const context = canvas?.getContext('2d');
+
+		if (!dialog || !openButton || !canvas || !context || !startScreen || !winScreen || !startButton) continue;
+
+		const WIDTH = 960;
+		const HEIGHT = 540;
+		const TOTAL_TOKENS = 4;
+		const spawn = { x: 45, y: 452 };
+		const player = { x: spawn.x, y: spawn.y, w: 22, h: 40, vx: 0, vy: 0, grounded: false };
+		const terminal: Rectangle = { x: 887, y: 408, w: 48, h: 62 };
+		const platforms: Platform[] = [
+			{ x: 0, y: 492, w: 185, h: 48 },
+			{ x: 215, y: 446, w: 150, h: 20, accent: true },
+			{ x: 397, y: 382, w: 124, h: 20, accent: true },
+			{ x: 548, y: 446, w: 157, h: 20, accent: true },
+			{ x: 737, y: 362, w: 105, h: 20, accent: true },
+			{ x: 865, y: 470, w: 95, h: 70 },
+		];
+		const tokens: Token[] = [
+			{ x: 260, y: 407, w: 59, h: 24, label: 'PLAN', color: '#72d9ff', collected: false },
+			{ x: 430, y: 343, w: 59, h: 24, label: 'CODE', color: '#5cf0b5', collected: false },
+			{ x: 592, y: 407, w: 64, h: 24, label: 'BUILD', color: '#ffd166', collected: false },
+			{ x: 755, y: 323, w: 70, h: 24, label: 'REPEAT', color: '#a78bfa', collected: false },
+		];
+		const bugs: Bug[] = [
+			{ x: 242, y: 429, w: 24, h: 17, minX: 224, maxX: 332, speed: 62, direction: 1 },
+			{ x: 648, y: 429, w: 24, h: 17, minX: 558, maxX: 672, speed: 76, direction: -1 },
+		];
+		const input = { left: false, right: false, jump: false, jumpQueued: false };
+		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+		let started = false;
+		let won = false;
+		let elapsed = 0;
+		let lastFrame = 0;
+		let animationFrame = 0;
+		let respawnGlow = 0;
+		let previousBodyOverflow = '';
+
+		const intersects = (a: Rectangle, b: Rectangle) =>
+			a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+
+		const formatTime = (seconds: number) => {
+			const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+			const remaining = (seconds % 60).toFixed(1).padStart(4, '0');
+			return `${minutes}:${remaining}`;
+		};
+
+		const collectedCount = () => tokens.filter((token) => token.collected).length;
+
+		const updateHud = () => {
+			if (timeDisplay) timeDisplay.textContent = formatTime(elapsed);
+			if (progressDisplay) progressDisplay.textContent = `${collectedCount()} / ${TOTAL_TOKENS}`;
+			const unlocked = collectedCount() === TOTAL_TOKENS;
+			if (terminalDisplay) {
+				terminalDisplay.textContent = unlocked ? 'TERMINAL READY' : 'TERMINAL LOCKED';
+				terminalDisplay.classList.toggle('is-ready', unlocked);
+			}
+		};
+
+		const clearInput = () => {
+			input.left = false;
+			input.right = false;
+			input.jump = false;
+			input.jumpQueued = false;
+		};
+
+		const resetPlayer = (announce = true) => {
+			player.x = spawn.x;
+			player.y = spawn.y;
+			player.vx = 0;
+			player.vy = 0;
+			player.grounded = false;
+			respawnGlow = reducedMotion.matches ? 0 : 0.55;
+			clearInput();
+			if (announce && messageDisplay) messageDisplay.textContent = 'Bug found. Respawning — collected tokens kept.';
+		};
+
+		const resetGame = () => {
+			cancelAnimationFrame(animationFrame);
+			animationFrame = 0;
+			started = false;
+			won = false;
+			elapsed = 0;
+			lastFrame = 0;
+			tokens.forEach((token) => { token.collected = false; });
+			bugs[0].x = 242;
+			bugs[0].direction = 1;
+			bugs[1].x = 648;
+			bugs[1].direction = -1;
+			resetPlayer(false);
+			startScreen.hidden = false;
+			winScreen.hidden = true;
+			if (messageDisplay) messageDisplay.textContent = 'Press Start game when you are ready.';
+			updateHud();
+			draw();
+		};
+
+		const startGame = () => {
+			if (!dialog.open) return;
+			started = true;
+			won = false;
+			startScreen.hidden = true;
+			winScreen.hidden = true;
+			lastFrame = 0;
+			if (messageDisplay) messageDisplay.textContent = 'Deployment in progress.';
+			canvas.focus({ preventScroll: true });
+			startLoop();
+		};
+
+		const restartGame = () => {
+			resetGame();
+			startGame();
+		};
+
+		const finishGame = () => {
+			won = true;
+			cancelAnimationFrame(animationFrame);
+			animationFrame = 0;
+			clearInput();
+			if (finalTimeDisplay) finalTimeDisplay.textContent = formatTime(elapsed);
+			if (messageDisplay) messageDisplay.textContent = `Deployment complete in ${formatTime(elapsed)}.`;
+			winScreen.hidden = false;
+			root.querySelector<HTMLButtonElement>('[data-win-restart]')?.focus({ preventScroll: true });
+			draw();
+		};
+
+		const update = (delta: number) => {
+			elapsed += delta;
+			respawnGlow = Math.max(0, respawnGlow - delta);
+
+			const moveDirection = Number(input.right) - Number(input.left);
+			player.vx = moveDirection * 220;
+			if (input.jumpQueued && player.grounded) {
+				player.vy = -520;
+				player.grounded = false;
+			}
+			input.jumpQueued = false;
+
+			const previousY = player.y;
+			player.x += player.vx * delta;
+			player.x = Math.max(0, Math.min(WIDTH - player.w, player.x));
+			player.vy += 1420 * delta;
+			player.y += player.vy * delta;
+			player.grounded = false;
+
+			for (const platform of platforms) {
+				const previousBottom = previousY + player.h;
+				const currentBottom = player.y + player.h;
+				const overlapsX = player.x + player.w > platform.x && player.x < platform.x + platform.w;
+				if (player.vy >= 0 && overlapsX && previousBottom <= platform.y && currentBottom >= platform.y) {
+					player.y = platform.y - player.h;
+					player.vy = 0;
+					player.grounded = true;
+				}
+			}
+
+			for (const bug of bugs) {
+				bug.x += bug.speed * bug.direction * delta;
+				if (bug.x <= bug.minX || bug.x >= bug.maxX) {
+					bug.x = Math.max(bug.minX, Math.min(bug.maxX, bug.x));
+					bug.direction *= -1;
+				}
+				if (intersects(player, bug)) {
+					resetPlayer();
+					return;
+				}
+			}
+
+			for (const token of tokens) {
+				if (!token.collected && intersects(player, token)) {
+					token.collected = true;
+					const count = collectedCount();
+					if (messageDisplay) messageDisplay.textContent = count === TOTAL_TOKENS ? 'All tokens collected. Terminal unlocked!' : `${token.label} collected. ${TOTAL_TOKENS - count} remaining.`;
+				}
+			}
+
+			if (collectedCount() === TOTAL_TOKENS && intersects(player, terminal)) finishGame();
+			if (player.y > HEIGHT + 80) resetPlayer();
+			updateHud();
+		};
+
+		const drawPixelText = (text: string, x: number, y: number, color: string, size = 13, align: CanvasTextAlign = 'left') => {
+			context.font = `700 ${size}px "Courier New", monospace`;
+			context.textAlign = align;
+			context.textBaseline = 'middle';
+			context.fillStyle = color;
+			context.fillText(text, Math.round(x), Math.round(y));
+		};
+
+		const drawBackground = () => {
+			const sky = context.createLinearGradient(0, 0, 0, HEIGHT);
+			sky.addColorStop(0, '#06101e');
+			sky.addColorStop(1, '#102a40');
+			context.fillStyle = sky;
+			context.fillRect(0, 0, WIDTH, HEIGHT);
+
+			context.fillStyle = '#a8e7ff';
+			const stars = [[56, 62], [125, 116], [205, 47], [286, 92], [365, 50], [447, 112], [534, 59], [625, 103], [714, 46], [802, 89], [910, 54]];
+			for (const [index, star] of stars.entries()) {
+				const flicker = reducedMotion.matches ? 1 : 0.55 + Math.sin(elapsed * 2 + index) * 0.35;
+				context.globalAlpha = flicker;
+				context.fillRect(star[0], star[1], index % 3 === 0 ? 3 : 2, index % 3 === 0 ? 3 : 2);
+			}
+			context.globalAlpha = 1;
+
+			context.fillStyle = '#d9f4ff';
+			context.fillRect(778, 54, 45, 9);
+			context.fillRect(769, 63, 54, 36);
+			context.fillStyle = '#06101e';
+			context.fillRect(769, 54, 25, 36);
+
+			const buildings = [
+				{ x: 0, y: 235, w: 112, h: 210 }, { x: 118, y: 284, w: 85, h: 161 },
+				{ x: 688, y: 245, w: 93, h: 200 }, { x: 788, y: 205, w: 73, h: 240 }, { x: 868, y: 267, w: 92, h: 178 },
+			];
+			for (const building of buildings) {
+				context.fillStyle = '#081725';
+				context.fillRect(building.x, building.y, building.w, building.h);
+				context.fillStyle = '#17415a';
+				for (let x = building.x + 13; x < building.x + building.w - 8; x += 22) {
+					for (let y = building.y + 17; y < building.y + building.h - 10; y += 27) {
+						if ((x + y) % 3 > 0) context.fillRect(x, y, 7, 10);
+					}
+				}
+			}
+
+			context.strokeStyle = '#173c55';
+			context.lineWidth = 2;
+			context.setLineDash([8, 10]);
+			context.beginPath();
+			context.moveTo(185, 492);
+			context.lineTo(865, 492);
+			context.stroke();
+			context.setLineDash([]);
+		};
+
+		const drawPlatforms = () => {
+			for (const platform of platforms) {
+				context.fillStyle = platform.accent ? '#173d55' : '#0a1b2a';
+				context.fillRect(platform.x, platform.y, platform.w, platform.h);
+				context.fillStyle = platform.accent ? '#42a9ff' : '#24536e';
+				context.fillRect(platform.x, platform.y, platform.w, 4);
+				context.fillStyle = '#0c2639';
+				for (let x = platform.x + 9; x < platform.x + platform.w - 4; x += 18) context.fillRect(x, platform.y + 9, 9, 3);
+			}
+
+			context.fillStyle = '#091826';
+			context.fillRect(18, 425, 112, 67);
+			context.fillStyle = '#15374d';
+			context.fillRect(27, 435, 94, 39);
+			context.fillStyle = '#72d9ff';
+			context.fillRect(35, 443, 46, 4);
+			context.fillStyle = '#5cf0b5';
+			context.fillRect(35, 454, 68, 4);
+			context.fillStyle = '#ffd166';
+			context.fillRect(35, 465, 36, 4);
+		};
+
+		const drawTokens = () => {
+			for (const token of tokens) {
+				if (token.collected) continue;
+				const bob = reducedMotion.matches ? 0 : Math.round(Math.sin(elapsed * 4 + token.x) * 3);
+				context.fillStyle = '#06101e';
+				context.fillRect(token.x - 3, token.y + bob - 3, token.w + 6, token.h + 6);
+				context.fillStyle = token.color;
+				context.fillRect(token.x, token.y + bob, token.w, token.h);
+				context.fillStyle = '#0a1929';
+				context.fillRect(token.x + 3, token.y + bob + 3, token.w - 6, token.h - 6);
+				drawPixelText(token.label, token.x + token.w / 2, token.y + bob + token.h / 2 + 1, token.color, 11, 'center');
+			}
+		};
+
+		const drawBugs = () => {
+			for (const bug of bugs) {
+				const x = Math.round(bug.x);
+				const y = Math.round(bug.y);
+				context.fillStyle = '#ff5d73';
+				context.fillRect(x + 4, y + 3, 16, 12);
+				context.fillRect(x + 8, y, 8, 3);
+				context.fillRect(x, y + 6, 4, 3);
+				context.fillRect(x + 20, y + 6, 4, 3);
+				context.fillRect(x + 2, y + 14, 5, 3);
+				context.fillRect(x + 17, y + 14, 5, 3);
+				context.fillStyle = '#07121f';
+				context.fillRect(x + 7, y + 6, 3, 3);
+				context.fillRect(x + 14, y + 6, 3, 3);
+			}
+		};
+
+		const drawTerminal = () => {
+			const unlocked = collectedCount() === TOTAL_TOKENS;
+			context.fillStyle = '#07121f';
+			context.fillRect(terminal.x, terminal.y, terminal.w, terminal.h);
+			context.fillStyle = unlocked ? '#5cf0b5' : '#315369';
+			context.fillRect(terminal.x + 4, terminal.y + 4, terminal.w - 8, terminal.h - 8);
+			context.fillStyle = '#0b2030';
+			context.fillRect(terminal.x + 9, terminal.y + 10, terminal.w - 18, 29);
+			if (unlocked) {
+				context.globalAlpha = reducedMotion.matches ? 0.18 : 0.15 + Math.sin(elapsed * 5) * 0.08;
+				context.fillStyle = '#5cf0b5';
+				context.fillRect(terminal.x - 10, terminal.y - 10, terminal.w + 20, terminal.h + 20);
+				context.globalAlpha = 1;
+				context.fillStyle = '#5cf0b5';
+				context.fillRect(terminal.x + 14, terminal.y + 20, 9, 3);
+				context.fillRect(terminal.x + 23, terminal.y + 23, 7, 3);
+			} else {
+				drawPixelText('×', terminal.x + terminal.w / 2, terminal.y + 24, '#7892a3', 18, 'center');
+			}
+			context.fillStyle = unlocked ? '#5cf0b5' : '#ffcf5c';
+			context.fillRect(terminal.x + 20, terminal.y + 48, 8, 4);
+		};
+
+		const drawPlayer = () => {
+			const x = Math.round(player.x);
+			const y = Math.round(player.y);
+			if (respawnGlow > 0) {
+				context.globalAlpha = 0.22;
+				context.fillStyle = '#72d9ff';
+				context.fillRect(x - 8, y - 8, player.w + 16, player.h + 16);
+				context.globalAlpha = 1;
+			}
+			context.fillStyle = '#72d9ff';
+			context.fillRect(x + 4, y, 14, 6);
+			context.fillRect(x + 1, y + 6, 20, 13);
+			context.fillStyle = '#f3c7a2';
+			context.fillRect(x + 5, y + 7, 12, 9);
+			context.fillStyle = '#0b2133';
+			context.fillRect(x + 4, y + 19, 15, 13);
+			context.fillStyle = '#42a9ff';
+			context.fillRect(x, y + 20, 5, 12);
+			context.fillRect(x + 18, y + 20, 4, 12);
+			context.fillStyle = '#a7bfd0';
+			context.fillRect(x + 4, y + 32, 6, 8);
+			context.fillRect(x + 14, y + 32, 6, 8);
+			context.fillStyle = '#06101e';
+			context.fillRect(x + 13, y + 9, 3, 3);
+		};
+
+		function draw() {
+			context.imageSmoothingEnabled = false;
+			context.clearRect(0, 0, WIDTH, HEIGHT);
+			drawBackground();
+			drawPlatforms();
+			drawTokens();
+			drawBugs();
+			drawTerminal();
+			drawPlayer();
+			context.fillStyle = 'rgba(4, 13, 22, .55)';
+			context.fillRect(0, 0, WIDTH, 28);
+			drawPixelText('NIGHT SHIFT // BUILD 01', 14, 15, '#72d9ff', 11);
+		}
+
+		const frame = (timestamp: number) => {
+			if (!dialog.open || !started || won || document.hidden) {
+				animationFrame = 0;
+				return;
+			}
+			if (!lastFrame) lastFrame = timestamp;
+			const delta = Math.min((timestamp - lastFrame) / 1000, 1 / 30);
+			lastFrame = timestamp;
+			update(delta);
+			draw();
+			if (!won) animationFrame = requestAnimationFrame(frame);
+		};
+
+		function startLoop() {
+			if (animationFrame || !dialog.open || !started || won || document.hidden) return;
+			lastFrame = 0;
+			animationFrame = requestAnimationFrame(frame);
+		}
+
+		const closeGame = () => {
+			if (dialog.open) dialog.close();
+		};
+
+		const setKeyboardInput = (event: KeyboardEvent, pressed: boolean) => {
+			if (!dialog.open || !started || won) return;
+			const key = event.code;
+			if (!['KeyA', 'KeyD', 'KeyW', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'Space'].includes(key)) return;
+			event.preventDefault();
+			if (key === 'KeyA' || key === 'ArrowLeft') input.left = pressed;
+			if (key === 'KeyD' || key === 'ArrowRight') input.right = pressed;
+			if (key === 'KeyW' || key === 'ArrowUp' || key === 'Space') {
+				if (pressed && !input.jump) input.jumpQueued = true;
+				input.jump = pressed;
+			}
+		};
+
+		openButton.addEventListener('click', () => {
+			resetGame();
+			previousBodyOverflow = document.body.style.overflow;
+			document.body.style.overflow = 'hidden';
+			dialog.showModal();
+			startButton.focus({ preventScroll: true });
+		});
+		startButton.addEventListener('click', startGame);
+		restartButtons.forEach((button) => button.addEventListener('click', restartGame));
+		closeButtons.forEach((button) => button.addEventListener('click', closeGame));
+		dialog.addEventListener('cancel', () => clearInput());
+		dialog.addEventListener('close', () => {
+			cancelAnimationFrame(animationFrame);
+			animationFrame = 0;
+			started = false;
+			clearInput();
+			document.body.style.overflow = previousBodyOverflow;
+			openButton.focus({ preventScroll: true });
+		});
+		document.addEventListener('visibilitychange', () => {
+			if (document.hidden) {
+				cancelAnimationFrame(animationFrame);
+				animationFrame = 0;
+				clearInput();
+			} else {
+				startLoop();
+			}
+		});
+		window.addEventListener('keydown', (event) => setKeyboardInput(event, true), { passive: false });
+		window.addEventListener('keyup', (event) => setKeyboardInput(event, false), { passive: false });
+		window.addEventListener('blur', clearInput);
+
+		root.querySelectorAll<HTMLButtonElement>('[data-control]').forEach((button) => {
+			const control = button.dataset.control as 'left' | 'right' | 'jump';
+			const press = (event: PointerEvent) => {
+				if (!dialog.open || !started || won) return;
+				event.preventDefault();
+				button.setPointerCapture(event.pointerId);
+				if (control === 'jump') {
+					if (!input.jump) input.jumpQueued = true;
+					input.jump = true;
+				} else input[control] = true;
+				button.classList.add('is-pressed');
+			};
+			const release = (event: PointerEvent) => {
+				if (control === 'jump') input.jump = false;
+				else input[control] = false;
+				button.classList.remove('is-pressed');
+				if (button.hasPointerCapture(event.pointerId)) button.releasePointerCapture(event.pointerId);
+			};
+			button.addEventListener('pointerdown', press);
+			button.addEventListener('pointerup', release);
+			button.addEventListener('pointercancel', release);
+			button.addEventListener('lostpointercapture', () => {
+				if (control === 'jump') input.jump = false;
+				else input[control] = false;
+				button.classList.remove('is-pressed');
+			});
+		});
+
+		canvas.tabIndex = -1;
+		resetGame();
+	}
+</script>
+
+<style>
+	.midnight-deploy { display: contents; }
+	.midnight-trigger { display: inline-grid; place-items: center; width: 42px; height: 42px; padding: 0; border: 1px solid var(--line-bright); border-radius: 50%; background: transparent; color: var(--text); cursor: pointer; transition: background .2s, color .2s, border-color .2s, transform .2s; }
+	.midnight-trigger:hover { border-color: var(--cyan); background: color-mix(in srgb, var(--blue) 12%, transparent); color: var(--cyan); transform: translateY(-2px); }
+	.game-dialog { width: min(1060px, calc(100vw - 28px)); max-height: calc(100dvh - 28px); margin: auto; padding: 0; overflow: auto; border: 1px solid var(--line-bright); background: var(--surface); color: var(--text); box-shadow: 0 28px 90px rgba(0, 0, 0, .58), 0 0 0 1px rgba(114, 217, 255, .1); }
+	.game-dialog::backdrop { background: rgba(2, 8, 15, .82); backdrop-filter: blur(7px); }
+	.dialog-shell { padding: 20px; background: linear-gradient(180deg, color-mix(in srgb, var(--surface-soft) 72%, var(--surface)), var(--surface)); }
+	.game-header, .game-hud, .game-footer, .game-help, .touch-controls { font-family: 'Courier New', Courier, monospace; }
+	.game-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 14px; }
+	.game-kicker { margin: 0 0 2px; color: var(--cyan); font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+	.game-header h2 { margin: 0; color: var(--text); font-family: 'Courier New', Courier, monospace; font-size: clamp(20px, 3vw, 28px); letter-spacing: 1px; text-transform: uppercase; }
+	.close-icon { display: grid; flex: 0 0 auto; place-items: center; width: 38px; height: 38px; padding: 0; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+	.close-icon:hover { border-color: var(--cyan); color: var(--cyan); }
+	.game-hud { display: flex; align-items: center; gap: clamp(12px, 3vw, 30px); padding: 10px 13px; border: 1px solid var(--line); border-bottom: 0; background: #081522; color: #8facbf; font-size: 11px; letter-spacing: 1px; }
+	.game-hud strong { color: #edf5ff; font-weight: 700; }
+	.terminal-state { margin-left: auto; color: #ffcf5c; font-weight: 700; }
+	.terminal-state.is-ready { color: #5cf0b5; }
+	.game-stage { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border: 1px solid var(--line-bright); background: #06101e; }
+	canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; touch-action: none; }
+	.game-overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(3, 11, 19, .67); }
+	.game-overlay[hidden] { display: none; }
+	.overlay-card { width: min(470px, 100%); padding: clamp(22px, 5vw, 38px); border: 1px solid #3b759b; background: rgba(7, 18, 31, .94); box-shadow: 9px 9px 0 rgba(66, 169, 255, .2); text-align: center; }
+	.overlay-eyebrow { margin: 0 0 10px !important; color: #72d9ff !important; font-family: 'Courier New', Courier, monospace; font-size: 10px !important; font-weight: 700; letter-spacing: 2px; }
+	.overlay-card h3 { margin: 0 0 13px; color: #edf5ff; font-family: 'Courier New', Courier, monospace; font-size: clamp(19px, 4vw, 28px); text-transform: uppercase; }
+	.overlay-card p:not(.overlay-eyebrow) { margin: 0 auto 22px; color: #b5ccdc; font-size: clamp(12px, 2vw, 14px); line-height: 1.65; }
+	.overlay-card p strong { color: #72d9ff; }
+	.primary-control, .secondary-control { min-height: 40px; padding: 0 18px; border: 1px solid #42a9ff; font-family: 'Courier New', Courier, monospace; font-size: 12px; font-weight: 700; cursor: pointer; }
+	.primary-control { background: #42a9ff; color: #061525; }
+	.primary-control:hover { background: #72d9ff; }
+	.secondary-control { background: transparent; color: #edf5ff; }
+	.secondary-control:hover { background: rgba(66, 169, 255, .15); }
+	.overlay-actions { display: flex; justify-content: center; gap: 10px; }
+	.game-help { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 24px; margin: 12px 0 0; color: var(--muted); font-size: 11px; }
+	.game-help span { display: inline-flex; align-items: center; gap: 5px; }
+	kbd { min-width: 23px; padding: 3px 5px; border: 1px solid var(--line-bright); border-bottom-width: 3px; background: var(--surface-soft); color: var(--text); font: inherit; text-align: center; }
+	.touch-controls { display: none; align-items: center; justify-content: space-between; margin-top: 12px; }
+	.touch-directions { display: flex; gap: 10px; }
+	.touch-controls button { display: inline-flex; align-items: center; justify-content: center; min-width: 58px; height: 50px; padding: 0 14px; border: 1px solid var(--line-bright); background: color-mix(in srgb, var(--surface-soft) 85%, transparent); color: var(--text); font: inherit; font-size: 20px; font-weight: 700; touch-action: none; user-select: none; }
+	.touch-controls button.is-pressed { border-color: var(--cyan); background: color-mix(in srgb, var(--blue) 30%, var(--surface)); color: var(--cyan); transform: translateY(1px); }
+	.touch-controls .jump-control { gap: 7px; min-width: 108px; }
+	.jump-control span { font-size: 10px; letter-spacing: 1px; }
+	.game-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 12px; color: var(--muted); font-size: 10px; }
+	.game-footer > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.game-footer > div { display: flex; flex: 0 0 auto; gap: 8px; }
+	.text-control { display: inline-flex; align-items: center; gap: 6px; padding: 6px 8px; border: 0; background: transparent; color: var(--cyan); font: inherit; cursor: pointer; }
+	.text-control:hover { color: var(--text); }
+	:global(body[data-theme='light']) .game-dialog { box-shadow: 0 28px 90px rgba(3, 20, 31, .35); }
+
+	@media (hover: none), (pointer: coarse) {
+		.touch-controls { display: flex; }
+		.game-help { display: none; }
+	}
+
+	@media (max-width: 640px) {
+		.game-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+		.dialog-shell { padding: 12px; }
+		.game-header { margin-bottom: 10px; }
+		.game-kicker { display: none; }
+		.game-hud { gap: 9px; padding: 8px; font-size: 9px; letter-spacing: .3px; }
+		.terminal-state { font-size: 0; }
+		.terminal-state::after { content: 'LOCKED'; font-size: 9px; }
+		.terminal-state.is-ready::after { content: 'READY'; }
+		.game-overlay { padding: 10px; }
+		.overlay-card { padding: 18px 16px; box-shadow: 5px 5px 0 rgba(66, 169, 255, .2); }
+		.overlay-card p:not(.overlay-eyebrow) { margin-bottom: 15px; line-height: 1.45; }
+		.game-footer > span { display: none; }
+		.game-footer { justify-content: flex-end; margin-top: 8px; }
+		.touch-controls { margin-top: 9px; }
+		.touch-controls button { height: 46px; }
+	}
+
+	@media (max-height: 700px) and (orientation: landscape) {
+		.game-dialog { width: min(900px, calc(100vw - 18px)); max-height: calc(100dvh - 12px); }
+		.dialog-shell { padding: 9px 12px; }
+		.game-header { margin-bottom: 7px; }
+		.game-kicker, .game-help, .game-footer > span { display: none; }
+		.game-header h2 { font-size: 18px; }
+		.close-icon { width: 32px; height: 32px; }
+		.game-hud { padding-block: 6px; }
+		.game-footer { justify-content: flex-end; margin-top: 6px; }
+		.touch-controls { position: absolute; right: 18px; bottom: 15px; left: 18px; z-index: 2; margin: 0; pointer-events: none; }
+		.touch-controls button { width: 48px; min-width: 48px; height: 42px; border-color: rgba(114, 217, 255, .72); background: rgba(7, 18, 31, .74); pointer-events: auto; }
+		.touch-controls .jump-control { width: 92px; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.midnight-trigger { transition: none; }
+		.midnight-trigger:hover { transform: none; }
+	}
+</style>

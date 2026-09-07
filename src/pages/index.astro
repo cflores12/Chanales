@@ -4,6 +4,7 @@ import { Mail, Menu, Moon, Sun } from '@lucide/astro';
 import { Icon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
 import aboutPortrait from '../assets/about-portrait.jpg';
+import MidnightDeploy from '../components/MidnightDeploy.astro';
 
 type ExperienceItem = {
 	date: string;
@@ -81,20 +82,22 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 	<div class="site-shell">
 		<header class="site-header">
 			<a class="brand" href="#home" aria-label="Chanales Flores home"><span class="brand-mark">CF</span><span>Chanales Flores</span></a>
-			<nav class="primary-nav" aria-label="Primary navigation"><a class="active" href="#home">01. Home</a><a href="#about">02. About</a><a href="#experience">03. Experience</a></nav>
+			<nav class="primary-nav" aria-label="Primary navigation"><a class="active" href="#home">01. Home</a><a href="#about">02. About</a><a href="#experience">03. Experience</a><a href="#projects">04. Projects</a></nav>
 			<div class="header-tools"><button class="menu-toggle" type="button" aria-label="Open navigation" title="Open navigation" aria-expanded="false"><Menu size={20} stroke-width="1.6" /></button><button class="theme-toggle" type="button" aria-label="Switch to light theme" title="Switch theme"><Moon class="theme-icon moon-icon" size={18} stroke-width="1.7" /><Sun class="theme-icon sun-icon" size={18} stroke-width="1.7" /></button><span class="header-note">Building a better web<br />one commit at a time.</span></div>
 		</header>
 
 		<main>
-			<section class="hero section-frame" id="home"><div class="hero-copy"><p class="terminal-intro">Hey, Chanales here.<span class="terminal-cursor" aria-hidden="true"></span></p><p class="lede">Software Engineer by day, curious builder by night. Based in New Jersey, I work on web applications for retail operations while spending my free time exploring different interests, experimenting with new technology, blogging, making art, and building small projects just to see where an idea can go.</p><div class="profile-actions"><a class="resume-button" href="#experience">View resume</a><a class="icon-button" href="mailto:florescareers28@gmail.com" aria-label="Email Chanales Flores" title="Email"><Mail size={17} stroke-width="1.7" /></a><a class="icon-button" href="https://www.linkedin.com/in/chanales-flores/" target="_blank" rel="noreferrer" aria-label="LinkedIn profile" title="LinkedIn"><Icon name="simple-icons:linkedin" size={17} /></a><a class="icon-button" href="https://github.com/cflores12" target="_blank" rel="noreferrer" aria-label="GitHub profile" title="GitHub"><Icon name="simple-icons:github" size={18} /></a></div></div><div class="hero-art"><img class="hero-image" src="/hero-workspace.png" data-dark-src="/hero-workspace.png" data-light-src="/hero-workspace-light.png" width="1672" height="941" alt="Pixel art developer working at a desk beside a city window" /></div></section>
+			<section class="hero section-frame" id="home"><div class="hero-copy"><p class="terminal-intro">Hey, Chanales here.<span class="terminal-cursor" aria-hidden="true"></span></p><p class="lede">Software Engineer by day, curious builder by night. Based in New Jersey, I work on web applications for retail operations while spending my free time exploring different interests, experimenting with new technology, blogging, making art, and building small projects just to see where an idea can go.</p><div class="profile-actions"><a class="resume-button" href="#experience">View resume</a><a class="icon-button" href="mailto:florescareers28@gmail.com" aria-label="Email Chanales Flores" title="Email"><Mail size={17} stroke-width="1.7" /></a><a class="icon-button" href="https://www.linkedin.com/in/chanales-flores/" target="_blank" rel="noreferrer" aria-label="LinkedIn profile" title="LinkedIn"><Icon name="simple-icons:linkedin" size={17} /></a><a class="icon-button" href="https://github.com/cflores12" target="_blank" rel="noreferrer" aria-label="GitHub profile" title="GitHub"><Icon name="simple-icons:github" size={18} /></a><MidnightDeploy /></div></div><div class="hero-art"><img class="hero-image" src="/hero-workspace.png" data-dark-src="/hero-workspace.png" data-light-src="/hero-workspace-light.png" width="1672" height="941" alt="Pixel art developer working at a desk beside a city window" /></div></section>
 
 			<section class="about-section section-frame" id="about"><div class="about-copy"><p class="eyebrow">02. About</p><p>At Spencer’s &amp; Spirit, I build and maintain internal applications that help support retail operations across our stores. One of my recent projects was a web application for ordering supplies across more than 1,500 Spirit Halloween locations, used daily by over 600 field managers.</p><p>More recently, I’ve also been exploring AI integrations that use data from our internal applications to improve workflows, surface useful insights, and make retail operations more efficient.</p><div class="about-toolkit"><h2>Core toolkit</h2><ul>{techStack.map((technology) => <li>{technology}</li>)}</ul></div></div><div class="about-portrait-panel"><div class="about-portrait-frame"><Image class="about-portrait" src={aboutPortrait} alt="Chanales Flores standing in Akihabara, Tokyo" layout="constrained" loading="lazy" decoding="async" /></div></div></section>
 
 			<section class="section-frame experience-section" id="experience"><p class="eyebrow">03. Experience</p><div class="timeline">{experience.map((item) => <article class="timeline-item"><div><h3>{item.role} <span class="at-company">@ {item.company}</span></h3><time>{item.date}</time><ul class="job-highlights">{item.highlights.map((highlight) => <li>{highlight}</li>)}</ul></div></article>)}</div></section>
 
+			<section class="projects-section section-frame" id="projects"><div class="section-heading"><p class="eyebrow">04. Projects &amp; Research</p></div><div class="project-grid"><article class="project-card"><div class="project-body"><p class="project-meta">Research <span aria-hidden="true">·</span> Spring 2019</p><h2>Solar Electric Personal Aerial Vehicle</h2><p class="project-description">Collected and analyzed data as part of a multidisciplinary team that built a small-scale proof of concept by integrating solar technology with a DJI drone. The research supported a broader concept for a solar-electric personal aerial vehicle and received an NJIT URI Phase 2 Student Seed Grant.</p><a class="project-link" href="https://research.njit.edu/uri/spring-2019-student-seed-grant-winners" target="_blank" rel="noreferrer">View award <span aria-hidden="true">↗</span></a></div></article><article class="project-card"><div class="project-body"><p class="project-meta">Web Project <span aria-hidden="true">·</span> February 2020</p><h2>Regional Business Conference Website</h2><p class="project-description">As Technology Officer for the New Jersey Institute of Technology Residence Hall Association, I built a custom informational website for a regional business conference hosted by the organization.</p><p class="project-status">Archived project <span aria-hidden="true">·</span> Original site offline</p></div></article></div></section>
+
 		</main>
 
-		<footer><div><strong>Chanales Flores</strong><small>Software Development Engineer 2</small></div><div class="footer-nav"><a href="#home">Home</a><a href="#about">About</a><a href="#experience">Experience</a></div><small>Built with curiosity.<br />© 2025 Chanales Flores. All rights reserved.</small></footer>
+		<footer><div><strong>Chanales Flores</strong><small>Software Development Engineer 2</small></div><div class="footer-nav"><a href="#home">Home</a><a href="#about">About</a><a href="#experience">Experience</a><a href="#projects">Projects</a></div><small>Built with curiosity.<br />© 2025 Chanales Flores. All rights reserved.</small></footer>
 
 	</div>
 </Layout>
@@ -128,7 +131,19 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 	nav { display: flex; gap: 25px; margin-left: auto; margin-right: 32px; } nav a, .header-note, .footer-nav a { color: var(--muted); font-size: 10px; text-decoration: none; } nav a:hover, nav a.active, .footer-nav a:hover { color: var(--cyan); } nav a.active { border-bottom: 1px solid var(--blue); padding-bottom: 8px; } .header-tools { display: flex; align-items: center; gap: 20px; } .theme-toggle { width: 38px; height: 38px; border: 1px solid var(--line); background: var(--surface); color: var(--cyan); cursor: pointer; font-size: 17px; } .header-note { border-left: 1px solid var(--line); padding-left: 20px; line-height: 1.35; font-size: 9px; }
 	.hero { min-height: 390px; padding: 48px 34px 26px; display: grid; grid-template-columns: 1fr 1.25fr; align-items: center; border-bottom: 1px solid var(--line); } .hero-copy { max-width: 500px; } .eyebrow { margin: 0 0 13px; color: var(--cyan); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; } .eyebrow::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 10px; background: var(--blue); } h1 { margin: 0; color: var(--text); font-family: Georgia, serif; font-size: clamp(3.1rem, 6vw, 5.2rem); line-height: .95; letter-spacing: 1px; } h1 span { color: var(--blue); } h2 { margin: 7px 0 14px; color: var(--text); font-family: Georgia, serif; font-size: 22px; } .lede { max-width: 445px; color: var(--muted); font-size: 13px; line-height: 1.65; } .hero-actions { display: flex; gap: 13px; margin-top: 23px; } .button { display: inline-flex; align-items: center; gap: 8px; padding: 11px 17px; border: 1px solid var(--blue); color: var(--text); font-size: 11px; text-decoration: none; } .button:hover { background: color-mix(in srgb, var(--blue) 16%, transparent); } .button.primary { background: var(--blue); color: #061525; font-weight: 700; } .button span { font-size: 16px; }
 	.hero-art { max-width: 590px; justify-self: end; width: 100%; overflow: hidden; } .hero-art .hero-image { display: block; width: 100%; height: auto; aspect-ratio: 1672 / 941; object-fit: contain; }
-	.projects-section, .experience-section { padding: 26px 34px 30px; border-bottom: 1px solid var(--line); } .section-heading { display: flex; align-items: center; justify-content: space-between; } .section-heading a { color: var(--cyan); font-size: 10px; text-decoration: none; } .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; } .project-card { border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 80%, transparent); transition: transform .2s, border-color .2s; } .project-card:hover { transform: translateY(-4px); border-color: var(--blue); } .project-preview { height: 120px; margin: 10px; display: grid; place-items: center; background: linear-gradient(135deg, #203f59, #8aaec0); } .blue .project-preview { background: linear-gradient(135deg, #193c67, #345f87); } .lavender .project-preview { background: linear-gradient(135deg, #d6e0ee, #8da8be); } .preview-window { width: 77%; height: 70%; position: relative; background: #f4f6f5; color: #253647; padding: 22px 10px 5px; box-shadow: 5px 5px 0 #263b4d; font-family: Arial, sans-serif; } .preview-window span { position: absolute; top: 7px; left: 8px; width: 5px; height: 5px; background: #4ea4dc; box-shadow: 9px 0 #e1b36b, 18px 0 #88bea2; } .preview-window strong { display: block; font-size: 9px; } .preview-window small { color: #64b99e; font-size: 7px; } .project-body { padding: 3px 13px 14px; } .project-body h3 { margin: 0; font-size: 15px; } .project-body p { margin: 5px 0; color: var(--muted); font-size: 11px; line-height: 1.4; } .project-body .detail { font-size: 10px; } .tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0 14px; } .tags span { padding: 4px 6px; color: var(--muted); background: var(--surface-soft); font-size: 8px; } .project-link { color: var(--cyan); font-size: 10px; text-decoration: none; }
+	.projects-section, .experience-section { padding: 26px 34px 30px; border-bottom: 1px solid var(--line); }
+	.section-heading { display: flex; align-items: center; justify-content: space-between; }
+	.project-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+	.project-card { display: flex; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 80%, transparent); transition: transform .2s, border-color .2s; }
+	.project-card:hover { transform: translateY(-4px); border-color: var(--blue); }
+	.project-body { display: flex; flex-direction: column; width: 100%; padding: 28px; }
+	.project-meta { margin: 0 0 18px; color: var(--cyan); font-family: 'Courier New', Courier, monospace; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+	.project-card h2 { margin: 0 0 14px; color: var(--text); font-size: 22px; line-height: 1.25; }
+	.project-description { flex: 1; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+	.project-link, .project-status { margin-top: 24px; font-family: 'Courier New', Courier, monospace; font-size: 11px; }
+	.project-link { align-self: flex-start; color: var(--cyan); text-decoration: none; }
+	.project-link:hover { color: var(--text); }
+	.project-status { color: var(--muted); letter-spacing: .5px; text-transform: uppercase; }
 	.timeline { max-width: 980px; margin-top: 7px; padding-left: 28px; border-left: 1px solid var(--line-bright); } .timeline-item { position: relative; padding: 0 0 54px 26px; } .timeline-item:last-child { padding-bottom: 0; } .timeline-item::before { content: ''; position: absolute; left: -33px; top: 5px; width: 9px; height: 9px; background: var(--blue); border: 3px solid var(--bg); border-radius: 50%; box-shadow: 0 0 0 1px var(--blue); } .timeline-item time { display: block; margin: 7px 0 19px; color: var(--cyan); font-size: 14px; font-weight: 700; } .timeline-item h3 { margin: 0 0 8px; color: var(--job-title); font-size: 20px; line-height: 1.25; } .timeline-item p, .job-highlights { color: var(--muted); font-size: 14px; line-height: 1.7; } .timeline-item p { margin: 0; } .job-highlights { margin: 0; padding: 0; list-style: none; } .job-highlights li { position: relative; padding-left: 22px; } .job-highlights li::before { content: ''; position: absolute; top: .65em; left: 2px; width: 7px; height: 7px; border: 1px solid var(--cyan); background: color-mix(in srgb, var(--blue) 45%, transparent); box-shadow: 3px 3px 0 color-mix(in srgb, var(--blue) 22%, transparent); } .job-highlights li + li { margin-top: 12px; } .at-company { color: var(--cyan); font-weight: 600; }
 	.split-section { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); } .about-panel, .skills-panel { padding: 27px 34px; } .about-panel { border-right: 1px solid var(--line); } .about-panel > p { color: var(--muted); font-size: 10px; line-height: 1.55; max-width: 500px; } .note { display: flex; justify-content: space-between; margin-top: 15px; padding: 9px 11px; border: 1px solid var(--line-bright); color: var(--cyan); font-size: 9px; } .note span { color: #408c78; } .skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; } .skills span { display: flex; align-items: center; gap: 8px; padding: 7px; border: 1px solid var(--line); color: var(--muted); font-size: 9px; } .skills b { color: var(--blue); font-family: Arial, sans-serif; font-size: 12px; }
 	.split-section { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); } .about-panel, .skills-panel { padding: 27px 34px; } .about-panel { border-right: 1px solid var(--line); } .about-panel > p { color: var(--muted); font-size: 10px; line-height: 1.55; max-width: 500px; } .note { display: flex; justify-content: space-between; margin-top: 15px; padding: 9px 11px; border: 1px solid var(--line-bright); color: var(--cyan); font-size: 9px; } .note span { color: #408c78; } .skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; } .skills span { display: flex; align-items: center; gap: 8px; padding: 7px; border: 1px solid var(--line); color: var(--muted); font-size: 9px; } .skills b { color: var(--blue); font-family: Arial, sans-serif; font-size: 12px; }
@@ -154,13 +169,6 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 	.projects-section { background: color-mix(in srgb, var(--surface) 38%, transparent); }
 	.experience-section { background: color-mix(in srgb, var(--bg) 72%, var(--surface)); }
 	.section-heading { margin-bottom: 26px; }
-	.project-grid { gap: 24px; }
-	.project-preview { height: 175px; margin: 14px; }
-	.project-body { padding: 9px 18px 23px; }
-	.project-body h3 { font-size: 17px; }
-	.project-body p { font-size: 12px; line-height: 1.55; }
-	.project-body .detail { font-size: 11px; }
-	.tags { margin-top: 14px; margin-bottom: 19px; }
 	.timeline { margin-top: 25px; max-width: 980px; }
 	.timeline-item { padding-top: 22px; padding-bottom: 22px; }
 	.split-section { background: color-mix(in srgb, var(--surface) 38%, transparent); }
@@ -173,8 +181,6 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 		.site-header, .section-frame, footer { padding-inline: 20px; }
 		.hero { min-height: 0; padding-top: 58px; padding-bottom: 48px; gap: 46px; }
 		.projects-section, .experience-section { padding-top: 46px; padding-bottom: 52px; }
-		.project-grid { gap: 24px; }
-		.project-preview { height: 190px; }
 		.about-panel, .skills-panel { padding-top: 46px; padding-bottom: 50px; }
 		.contact-section { padding-top: 52px; padding-bottom: 58px; }
 	}
@@ -182,7 +188,6 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 	@media (max-width: 500px) {
 		.hero { padding-top: 46px; padding-bottom: 38px; }
 		h1 { font-size: 3.5rem; }
-		.project-preview { height: 160px; }
 		.profile-actions { gap: 9px; }
 		.resume-button { padding-inline: 14px; }
 	}
@@ -275,6 +280,7 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 	.hero { min-height: 650px; padding-top: 104px; padding-bottom: 92px; }
 	.about-section { gap: 96px; padding-top: 104px; padding-bottom: 108px; }
 	.experience-section { padding-top: 100px; padding-bottom: 112px; }
+	.projects-section { padding-top: 100px; padding-bottom: 108px; }
 	.timeline { margin-top: 42px; }
 	.timeline-item { padding-top: 32px; padding-bottom: 32px; }
 	footer { padding-top: 44px; padding-bottom: 44px; }
@@ -283,6 +289,7 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 		.hero { min-height: 0; padding-top: 76px; padding-bottom: 68px; }
 		.about-section { gap: 52px; padding-top: 76px; padding-bottom: 80px; }
 		.experience-section { padding-top: 76px; padding-bottom: 84px; }
+		.projects-section { padding-top: 76px; padding-bottom: 80px; }
 		.timeline { margin-top: 34px; }
 		.timeline-item { padding-top: 27px; padding-bottom: 27px; }
 		footer { padding-top: 36px; padding-bottom: 36px; }
@@ -292,6 +299,7 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 		.hero { padding-top: 60px; padding-bottom: 54px; }
 		.about-section { padding-top: 60px; padding-bottom: 64px; }
 		.experience-section { padding-top: 60px; padding-bottom: 68px; }
+		.projects-section { padding-top: 60px; padding-bottom: 64px; }
 		.timeline { margin-top: 28px; }
 		.timeline-item { padding-top: 24px; padding-bottom: 24px; }
 	}
