@@ -2,6 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import { Mail, Menu, Moon, Sun } from '@lucide/astro';
 import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import aboutPortrait from '../assets/about-portrait.jpg';
 
 type ExperienceItem = {
 	date: string;
@@ -16,10 +18,10 @@ const experience: ExperienceItem[] = [
 		role: 'Software Development Engineer 2',
 		company: "Spencer's & Spirit",
 		highlights: [
-			'Architected and launched a cloud-native supply ordering application and separate API services supporting fixture, signage, and supply requests across more than 1,500 retail locations.',
-			'Built a data integration pipeline that reduced shipment-data latency by 80% and generated more than $300K in annual savings.',
-			'Modernized store-facing scanner workflows, redesigned a compliance and audit application, and introduced automated testing into delivery pipelines.',
-			'Led incident remediation for production issues affecting more than 1,000 users, mentored junior engineers, and contributed to architecture decisions.'
+			'Architected and launched a cloud-native supply-ordering application and supporting REST APIs to process and route fixture, signage, and supply requests across more than 1,500 retail locations.',
+			'Built a pipeline that synchronized shipment and container data across store-opening workflows, reducing data latency by 80% and generating more than $300K in annual savings.',
+			'Redesigned an Azure-hosted compliance and audit application and led its migration from Razor and JavaScript to Blazor, reducing technical debt by 60% and increasing development velocity by 40%.',
+			'Led root-cause analysis and remediation for two major production incidents affecting more than 1,000 users, restoring mileage processing and authentication access while implementing long-term preventive fixes.'
 		]
 	},
 	{
@@ -27,8 +29,8 @@ const experience: ExperienceItem[] = [
 		role: 'Software Development Engineer 1',
 		company: "Spencer's & Spirit",
 		highlights: [
-			'Re-engineered a warehouse inventory data pipeline to improve reliability during system transitions.',
-			'Built a synchronization service that helped vendors and internal teams coordinate scheduling across more than 1,500 locations, reducing manual coordination and saving more than $100K annually.'
+			'Modernized a legacy inventory pipeline connecting multiple warehouse systems with the order-management platform, improving reliability during warehouse transitions.',
+			'Built a scheduled synchronization service that coordinated vendor and internal scheduling across more than 1,500 locations, improving operational visibility, reducing manual coordination, and saving more than $100K annually.'
 		]
 	},
 	{
@@ -36,7 +38,7 @@ const experience: ExperienceItem[] = [
 		role: 'Software Development Engineer Intern',
 		company: "Spencer's & Spirit",
 		highlights: [
-			'Built and deployed an internal web application that streamlined online commerce workflows and helped teams complete daily operations more efficiently.'
+			'Built and deployed an internal web application that streamlined e-commerce workflows and improved daily operational efficiency.'
 		]
 	},
 	{
@@ -44,38 +46,34 @@ const experience: ExperienceItem[] = [
 		role: 'Software Engineer Intern',
 		company: 'UPS',
 		highlights: [
-			'Developed backend alerting and reporting solutions for healthcare package tracking, including data pipelines that helped teams monitor operational data and respond to issues more effectively.',
-			'Received the UPS Summer Hackathon Crowd Favorite award.'
+			'Built a proof of concept for adding alerting capabilities to a web application that tracked UPS Premier healthcare packages across scanning and sensor systems.',
+			'Created Power BI reports that helped corporate users analyze healthcare package data and gain greater operational insight.',
+			'Won the Crowd Favorite award at the UPS Summer Hackathon.'
 		]
 	},
 	{
 		date: 'January 2021 – May 2021',
 		role: 'Software Engineer Intern',
-		company: 'Viocare, Inc.',
+		company: 'Viocare',
 		highlights: [
-			'Constructed new relational databases to migrate and import nutrition data for dietary feeding studies, expanding the application with new USDA food data.',
-			'Transformed a monolithic web application into a suite of microservices for better scalability, creating services for the food database, nutrition analysis, and dietary scores.',
-			'Built application programming interfaces for a web application that performs dietary analysis and provides feedback for improving a user’s diet. The endpoints retrieve nutrition analyses, dietary scores, and dietary reports.'
+			'Designed relational databases and migration processes to integrate USDA nutrition data into dietary research applications.',
+			'Helped decompose a monolithic application into microservices for food data, nutrition analysis, and dietary scoring, improving scalability.',
+			'Developed REST APIs that delivered nutrition analyses, dietary scores, and reports used to provide users with dietary feedback.'
 		]
 	},
 	{
 		date: 'September 2020 – December 2020',
 		role: 'Software Engineer Intern',
-		company: 'KAR Global',
+		company: 'KAR Global (now OPENLANE)',
 		highlights: [
-			'Contributed to a web application that supported vehicle-shipping services.',
-			'Configured automated end-to-end testing to improve application reliability and streamline quality assurance.',
-			'Implemented front-end features and refactored backend code to improve web-page performance.'
+			'Contributed to a web application supporting vehicle-shipping operations.',
+			'Led the implementation of Playwright end-to-end test automation, improving application reliability and streamlining quality assurance.',
+			'Helped modernize legacy Razor Pages by migrating front-end functionality to React.js.'
 		]
 	},
 ];
 
-const techStack = [
-	['C#', 'C#'],
-	['JS', 'JavaScript'],
-	['PY', 'Python'],
-	['SQL', 'SQL']
-];
+const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwright', 'Python', 'SQL'];
 
 ---
 
@@ -88,9 +86,9 @@ const techStack = [
 		</header>
 
 		<main>
-			<section class="hero section-frame" id="home"><div class="hero-copy"><p class="terminal-intro">Hey, Chanales here.<span class="terminal-cursor" aria-hidden="true"></span></p><p class="lede">Software Engineer by day, curious builder by night. Based in New Jersey, I work on web applications for retail operations while spending my free time exploring different interests, experimenting with new technology, blogging, making art, and building small projects just to see where an idea can go.</p><div class="profile-actions"><a class="resume-button" href="#experience">View resume</a><a class="icon-button" href="mailto:florescareers28@gmail.com" aria-label="Email Chanales Flores" title="Email"><Mail size={17} stroke-width="1.7" /></a><a class="icon-button" href="https://www.linkedin.com/in/chanales-flores/" target="_blank" rel="noreferrer" aria-label="LinkedIn profile" title="LinkedIn"><Icon name="simple-icons:linkedin" size={17} /></a><a class="icon-button" href="https://github.com/cflores12" target="_blank" rel="noreferrer" aria-label="GitHub profile" title="GitHub"><Icon name="simple-icons:github" size={18} /></a></div></div><div class="hero-art"><img class="hero-image" src="/hero-workspace.png" data-dark-src="/hero-workspace.png" data-light-src="/hero-workspace-light.png" alt="Pixel art developer working at a desk beside a city window" /></div></section>
+			<section class="hero section-frame" id="home"><div class="hero-copy"><p class="terminal-intro">Hey, Chanales here.<span class="terminal-cursor" aria-hidden="true"></span></p><p class="lede">Software Engineer by day, curious builder by night. Based in New Jersey, I work on web applications for retail operations while spending my free time exploring different interests, experimenting with new technology, blogging, making art, and building small projects just to see where an idea can go.</p><div class="profile-actions"><a class="resume-button" href="#experience">View resume</a><a class="icon-button" href="mailto:florescareers28@gmail.com" aria-label="Email Chanales Flores" title="Email"><Mail size={17} stroke-width="1.7" /></a><a class="icon-button" href="https://www.linkedin.com/in/chanales-flores/" target="_blank" rel="noreferrer" aria-label="LinkedIn profile" title="LinkedIn"><Icon name="simple-icons:linkedin" size={17} /></a><a class="icon-button" href="https://github.com/cflores12" target="_blank" rel="noreferrer" aria-label="GitHub profile" title="GitHub"><Icon name="simple-icons:github" size={18} /></a></div></div><div class="hero-art"><img class="hero-image" src="/hero-workspace.png" data-dark-src="/hero-workspace.png" data-light-src="/hero-workspace-light.png" width="1672" height="941" alt="Pixel art developer working at a desk beside a city window" /></div></section>
 
-			<section class="about-section section-frame" id="about"><div class="about-copy"><p class="eyebrow">02. About</p><p>At Spencer’s &amp; Spirit, I develop and maintain internal applications that power key retail operations across our stores, from web and desktop software to mobile and scanner-based tools used in the field.</p><p>A recent project involved building a supply-ordering application for more than 1,500 Spirit Halloween locations, supporting over 600 field managers who use it daily. I’m also working on AI integrations that connect with our internal application data to explore new ways of improving retail workflows, surfacing operational insights, and helping teams make better use of the data available to them.</p></div><div class="about-facts"><span>Technologies I work with</span><div class="tech-stack">{techStack.map(([label, name]) => <span class="tech-chip"><b>{label}</b>{name}</span>)}</div></div></section>
+			<section class="about-section section-frame" id="about"><div class="about-copy"><p class="eyebrow">02. About</p><p>At Spencer’s &amp; Spirit, I build and maintain internal applications that help support retail operations across our stores. One of my recent projects was a web application for ordering supplies across more than 1,500 Spirit Halloween locations, used daily by over 600 field managers.</p><p>More recently, I’ve also been exploring AI integrations that use data from our internal applications to improve workflows, surface useful insights, and make retail operations more efficient.</p><div class="about-toolkit"><h2>Core toolkit</h2><ul>{techStack.map((technology) => <li>{technology}</li>)}</ul></div></div><div class="about-portrait-panel"><div class="about-portrait-frame"><Image class="about-portrait" src={aboutPortrait} alt="Chanales Flores standing in Akihabara, Tokyo" layout="constrained" loading="lazy" decoding="async" /></div></div></section>
 
 			<section class="section-frame experience-section" id="experience"><p class="eyebrow">03. Experience</p><div class="timeline">{experience.map((item) => <article class="timeline-item"><div><h3>{item.role} <span class="at-company">@ {item.company}</span></h3><time>{item.date}</time><ul class="job-highlights">{item.highlights.map((highlight) => <li>{highlight}</li>)}</ul></div></article>)}</div></section>
 
@@ -129,7 +127,7 @@ const techStack = [
 	.site-header, .section-frame, footer { width: min(100%, 1180px); margin-inline: auto; } .site-header { position: sticky; top: 0; z-index: 10; min-height: 70px; padding: 0 34px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(12px); } .brand { display: flex; align-items: center; gap: 14px; font-size: 16px; font-weight: 700; text-decoration: none; white-space: nowrap; } .brand-mark { display: grid; place-items: center; width: 30px; height: 27px; color: var(--cyan); border: 1px solid var(--cyan); font-size: 12px; }
 	nav { display: flex; gap: 25px; margin-left: auto; margin-right: 32px; } nav a, .header-note, .footer-nav a { color: var(--muted); font-size: 10px; text-decoration: none; } nav a:hover, nav a.active, .footer-nav a:hover { color: var(--cyan); } nav a.active { border-bottom: 1px solid var(--blue); padding-bottom: 8px; } .header-tools { display: flex; align-items: center; gap: 20px; } .theme-toggle { width: 38px; height: 38px; border: 1px solid var(--line); background: var(--surface); color: var(--cyan); cursor: pointer; font-size: 17px; } .header-note { border-left: 1px solid var(--line); padding-left: 20px; line-height: 1.35; font-size: 9px; }
 	.hero { min-height: 390px; padding: 48px 34px 26px; display: grid; grid-template-columns: 1fr 1.25fr; align-items: center; border-bottom: 1px solid var(--line); } .hero-copy { max-width: 500px; } .eyebrow { margin: 0 0 13px; color: var(--cyan); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; } .eyebrow::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 10px; background: var(--blue); } h1 { margin: 0; color: var(--text); font-family: Georgia, serif; font-size: clamp(3.1rem, 6vw, 5.2rem); line-height: .95; letter-spacing: 1px; } h1 span { color: var(--blue); } h2 { margin: 7px 0 14px; color: var(--text); font-family: Georgia, serif; font-size: 22px; } .lede { max-width: 445px; color: var(--muted); font-size: 13px; line-height: 1.65; } .hero-actions { display: flex; gap: 13px; margin-top: 23px; } .button { display: inline-flex; align-items: center; gap: 8px; padding: 11px 17px; border: 1px solid var(--blue); color: var(--text); font-size: 11px; text-decoration: none; } .button:hover { background: color-mix(in srgb, var(--blue) 16%, transparent); } .button.primary { background: var(--blue); color: #061525; font-weight: 700; } .button span { font-size: 16px; }
-	.hero-art { max-width: 590px; justify-self: end; width: 100%; overflow: hidden; } .hero-art .hero-image { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: contain; image-rendering: pixelated; }
+	.hero-art { max-width: 590px; justify-self: end; width: 100%; overflow: hidden; } .hero-art .hero-image { display: block; width: 100%; height: auto; aspect-ratio: 1672 / 941; object-fit: contain; }
 	.projects-section, .experience-section { padding: 26px 34px 30px; border-bottom: 1px solid var(--line); } .section-heading { display: flex; align-items: center; justify-content: space-between; } .section-heading a { color: var(--cyan); font-size: 10px; text-decoration: none; } .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; } .project-card { border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 80%, transparent); transition: transform .2s, border-color .2s; } .project-card:hover { transform: translateY(-4px); border-color: var(--blue); } .project-preview { height: 120px; margin: 10px; display: grid; place-items: center; background: linear-gradient(135deg, #203f59, #8aaec0); } .blue .project-preview { background: linear-gradient(135deg, #193c67, #345f87); } .lavender .project-preview { background: linear-gradient(135deg, #d6e0ee, #8da8be); } .preview-window { width: 77%; height: 70%; position: relative; background: #f4f6f5; color: #253647; padding: 22px 10px 5px; box-shadow: 5px 5px 0 #263b4d; font-family: Arial, sans-serif; } .preview-window span { position: absolute; top: 7px; left: 8px; width: 5px; height: 5px; background: #4ea4dc; box-shadow: 9px 0 #e1b36b, 18px 0 #88bea2; } .preview-window strong { display: block; font-size: 9px; } .preview-window small { color: #64b99e; font-size: 7px; } .project-body { padding: 3px 13px 14px; } .project-body h3 { margin: 0; font-size: 15px; } .project-body p { margin: 5px 0; color: var(--muted); font-size: 11px; line-height: 1.4; } .project-body .detail { font-size: 10px; } .tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 9px 0 14px; } .tags span { padding: 4px 6px; color: var(--muted); background: var(--surface-soft); font-size: 8px; } .project-link { color: var(--cyan); font-size: 10px; text-decoration: none; }
 	.timeline { max-width: 980px; margin-top: 7px; padding-left: 28px; border-left: 1px solid var(--line-bright); } .timeline-item { position: relative; padding: 0 0 54px 26px; } .timeline-item:last-child { padding-bottom: 0; } .timeline-item::before { content: ''; position: absolute; left: -33px; top: 5px; width: 9px; height: 9px; background: var(--blue); border: 3px solid var(--bg); border-radius: 50%; box-shadow: 0 0 0 1px var(--blue); } .timeline-item time { display: block; margin: 7px 0 19px; color: var(--cyan); font-size: 14px; font-weight: 700; } .timeline-item h3 { margin: 0 0 8px; color: var(--job-title); font-size: 20px; line-height: 1.25; } .timeline-item p, .job-highlights { color: var(--muted); font-size: 14px; line-height: 1.7; } .timeline-item p { margin: 0; } .job-highlights { margin: 0; padding: 0; list-style: none; } .job-highlights li { position: relative; padding-left: 22px; } .job-highlights li::before { content: ''; position: absolute; top: .65em; left: 2px; width: 7px; height: 7px; border: 1px solid var(--cyan); background: color-mix(in srgb, var(--blue) 45%, transparent); box-shadow: 3px 3px 0 color-mix(in srgb, var(--blue) 22%, transparent); } .job-highlights li + li { margin-top: 12px; } .at-company { color: var(--cyan); font-weight: 600; }
 	.split-section { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); } .about-panel, .skills-panel { padding: 27px 34px; } .about-panel { border-right: 1px solid var(--line); } .about-panel > p { color: var(--muted); font-size: 10px; line-height: 1.55; max-width: 500px; } .note { display: flex; justify-content: space-between; margin-top: 15px; padding: 9px 11px; border: 1px solid var(--line-bright); color: var(--cyan); font-size: 9px; } .note span { color: #408c78; } .skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; } .skills span { display: flex; align-items: center; gap: 8px; padding: 7px; border: 1px solid var(--line); color: var(--muted); font-size: 9px; } .skills b { color: var(--blue); font-family: Arial, sans-serif; font-size: 12px; }
@@ -235,14 +233,13 @@ const techStack = [
 	.about-section { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(220px, .7fr); gap: 72px; padding-top: 72px; padding-bottom: 76px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 34%, transparent); }
 	.about-copy h2 { max-width: 620px; margin: 0 0 22px; font-size: clamp(1.8rem, 3vw, 2.5rem); line-height: 1.15; }
 	.about-copy > p:not(.eyebrow) { max-width: 700px; margin: 0 0 18px; color: var(--muted); font-size: 17px; line-height: 1.75; }
-	.about-facts { display: grid; align-content: center; gap: 7px; padding-left: 26px; border-left: 1px solid var(--line-bright); }
-	.about-facts span { margin-top: 12px; color: var(--cyan); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
-	.about-facts span:first-child { margin-top: 0; }
-	.about-facts strong { color: var(--text); font-family: Georgia, serif; font-size: 18px; font-weight: 400; }
-	.tech-stack { display: grid; gap: 10px; margin-top: 8px; }
-	.tech-chip { display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 8px 11px; border: 1px solid var(--line); background: color-mix(in srgb, var(--surface-soft) 62%, transparent); color: var(--text); font-size: 13px; line-height: 1.35; }
-	.tech-chip b { display: inline-grid; place-items: center; min-width: 30px; min-height: 26px; padding-inline: 4px; border: 1px solid var(--line-bright); color: var(--blue); font-family: 'Courier New', Courier, monospace; font-size: 11px; }
-	.tech-chip:hover { border-color: var(--cyan); }
+	.about-toolkit { margin-top: 32px; }
+	.about-toolkit h2 { margin-bottom: 14px; color: var(--cyan); font-family: 'Courier New', Courier, monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+	.about-toolkit ul { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+	.about-toolkit li { padding: 8px 12px; border: 1px solid var(--line-bright); background: color-mix(in srgb, var(--surface-soft) 62%, transparent); color: var(--text); font-family: 'Courier New', Courier, monospace; font-size: 12px; }
+	.about-portrait-panel { display: grid; align-items: center; padding-left: 26px; border-left: 1px solid var(--line-bright); }
+	.about-portrait-frame { position: relative; width: 100%; max-width: 420px; aspect-ratio: 4 / 5; overflow: hidden; border: 1px solid var(--line-bright); background: var(--surface-soft); }
+	.about-portrait-frame .about-portrait { display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center bottom; transform: scale(1.28); transform-origin: 55% 100%; }
 	:global(body) { line-height: 1.5; }
 	nav a, .header-note, .footer-nav a { font-size: 13px; }
 	.eyebrow, .terminal-intro { font-family: 'Courier New', Courier, monospace; }
@@ -265,7 +262,8 @@ const techStack = [
 		:global(body.nav-open) .primary-nav a { padding: 11px 0; border-bottom: 1px solid var(--line); }
 		:global(body.nav-open) .site-header { flex-wrap: wrap; }
 		.about-section { grid-template-columns: 1fr; gap: 38px; padding-top: 52px; padding-bottom: 56px; }
-		.about-facts { padding-top: 24px; padding-left: 0; border-top: 1px solid var(--line-bright); border-left: 0; }
+		.about-portrait-panel { padding-top: 24px; padding-left: 0; border-top: 1px solid var(--line-bright); border-left: 0; }
+		.about-portrait-frame { justify-self: center; }
 		.lede { font-size: 16px; }
 		nav a, .header-note, .footer-nav a { font-size: 12px; }
 		.brand { min-width: 0; flex: 1; }
