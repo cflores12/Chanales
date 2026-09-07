@@ -16,6 +16,7 @@ import { RotateCcw, X } from '@lucide/astro';
 			</header>
 
 			<div class="game-hud" aria-label="Game status">
+				<span>LEVEL <strong data-game-level>1 / 4 · EASY</strong></span>
 				<span>TIME <strong data-game-time>00:00.0</strong></span>
 				<span>TOKENS <strong data-game-progress>0 / 4</strong></span>
 				<span class="terminal-state" data-terminal-state>TERMINAL LOCKED</span>
@@ -29,17 +30,32 @@ import { RotateCcw, X } from '@lucide/astro';
 				<div class="game-overlay start-screen" data-start-screen>
 					<div class="overlay-card">
 						<p class="overlay-eyebrow">DEPLOY WINDOW OPEN</p>
-						<h3>Ship before sunrise.</h3>
-						<p>Collect <strong>PLAN</strong>, <strong>CODE</strong>, <strong>BUILD</strong>, and <strong>REPEAT</strong>. Dodge the bugs, then reach the terminal.</p>
+						<h3>Four builds. One night.</h3>
+						<p>Clear four increasingly difficult levels. Collect <strong>PLAN</strong>, <strong>CODE</strong>, <strong>BUILD</strong>, and <strong>REPEAT</strong>, then reach each terminal.</p>
 						<button class="primary-control" type="button" data-game-start>Start game</button>
 					</div>
 				</div>
 
-				<div class="game-overlay win-screen" hidden data-win-screen>
+				<div class="game-overlay level-screen" role="dialog" aria-labelledby="level-complete-title" hidden data-level-screen>
+					<div class="overlay-card">
+						<p class="overlay-eyebrow" data-level-complete-eyebrow>LEVEL 1 COMPLETE</p>
+						<h3 id="level-complete-title" data-level-complete-title>Easy cleared.</h3>
+						<p>Level time: <strong data-level-time>00:00.0</strong>. Next up: <strong data-next-level>Normal</strong>.</p>
+						<button class="primary-control" type="button" data-level-continue>Continue to Level 2</button>
+					</div>
+				</div>
+
+				<div class="game-overlay win-screen" role="dialog" aria-labelledby="run-complete-title" hidden data-win-screen>
 					<div class="overlay-card">
 						<p class="overlay-eyebrow">DEPLOYMENT COMPLETE</p>
-						<h3>It works on production.</h3>
-						<p>All four tokens delivered in <strong data-final-time>00:00.0</strong>.</p>
+						<h3 id="run-complete-title">It works on production.</h3>
+						<div class="run-summary" aria-label="Level completion times">
+							<span>Easy <strong data-result-time="0">00:00.0</strong></span>
+							<span>Normal <strong data-result-time="1">00:00.0</strong></span>
+							<span>Challenging <strong data-result-time="2">00:00.0</strong></span>
+							<span>Hard <strong data-result-time="3">00:00.0</strong></span>
+						</div>
+						<p class="total-time">Total run time: <strong data-total-time>00:00.0</strong>.</p>
 						<div class="overlay-actions">
 							<button class="primary-control" type="button" data-win-restart>Play again</button>
 							<button class="secondary-control" type="button" data-win-close>Close</button>
@@ -77,6 +93,124 @@ import { RotateCcw, X } from '@lucide/astro';
 	type Platform = Rectangle & { accent?: boolean };
 	type Token = Rectangle & { label: string; collected: boolean; color: string };
 	type Bug = Rectangle & { minX: number; maxX: number; speed: number; direction: number };
+	type Point = Pick<Rectangle, 'x' | 'y'>;
+	type TokenDefinition = Omit<Token, 'collected'>;
+	type LevelDefinition = {
+		name: string;
+		spawn: Point;
+		terminal: Rectangle;
+		platforms: Platform[];
+		tokens: TokenDefinition[];
+		bugs: Bug[];
+	};
+
+	const TOKEN_COLORS = ['#72d9ff', '#5cf0b5', '#ffd166', '#a78bfa'];
+	const LEVELS: LevelDefinition[] = [
+		{
+			name: 'Easy',
+			spawn: { x: 45, y: 452 },
+			terminal: { x: 887, y: 408, w: 48, h: 62 },
+			platforms: [
+				{ x: 0, y: 492, w: 185, h: 48 },
+				{ x: 215, y: 446, w: 150, h: 20, accent: true },
+				{ x: 397, y: 382, w: 124, h: 20, accent: true },
+				{ x: 548, y: 446, w: 157, h: 20, accent: true },
+				{ x: 737, y: 362, w: 105, h: 20, accent: true },
+				{ x: 865, y: 470, w: 95, h: 70 },
+			],
+			tokens: [
+				{ x: 260, y: 407, w: 59, h: 24, label: 'PLAN', color: TOKEN_COLORS[0] },
+				{ x: 430, y: 343, w: 59, h: 24, label: 'CODE', color: TOKEN_COLORS[1] },
+				{ x: 592, y: 407, w: 64, h: 24, label: 'BUILD', color: TOKEN_COLORS[2] },
+				{ x: 755, y: 323, w: 70, h: 24, label: 'REPEAT', color: TOKEN_COLORS[3] },
+			],
+			bugs: [
+				{ x: 242, y: 429, w: 24, h: 17, minX: 224, maxX: 332, speed: 62, direction: 1 },
+				{ x: 648, y: 429, w: 24, h: 17, minX: 558, maxX: 672, speed: 76, direction: -1 },
+			],
+		},
+		{
+			name: 'Normal',
+			spawn: { x: 38, y: 452 },
+			terminal: { x: 895, y: 408, w: 48, h: 62 },
+			platforms: [
+				{ x: 0, y: 492, w: 155, h: 48 },
+				{ x: 180, y: 450, w: 135, h: 20, accent: true },
+				{ x: 340, y: 390, w: 112, h: 20, accent: true },
+				{ x: 480, y: 450, w: 120, h: 20, accent: true },
+				{ x: 625, y: 370, w: 105, h: 20, accent: true },
+				{ x: 755, y: 430, w: 95, h: 20, accent: true },
+				{ x: 875, y: 470, w: 85, h: 70 },
+			],
+			tokens: [
+				{ x: 203, y: 411, w: 59, h: 24, label: 'PLAN', color: TOKEN_COLORS[0] },
+				{ x: 366, y: 351, w: 59, h: 24, label: 'CODE', color: TOKEN_COLORS[1] },
+				{ x: 508, y: 411, w: 64, h: 24, label: 'BUILD', color: TOKEN_COLORS[2] },
+				{ x: 642, y: 331, w: 70, h: 24, label: 'REPEAT', color: TOKEN_COLORS[3] },
+			],
+			bugs: [
+				{ x: 275, y: 433, w: 24, h: 17, minX: 188, maxX: 283, speed: 72, direction: -1 },
+				{ x: 492, y: 433, w: 24, h: 17, minX: 488, maxX: 568, speed: 84, direction: 1 },
+				{ x: 805, y: 413, w: 24, h: 17, minX: 763, maxX: 818, speed: 92, direction: -1 },
+			],
+		},
+		{
+			name: 'Challenging',
+			spawn: { x: 34, y: 452 },
+			terminal: { x: 895, y: 408, w: 48, h: 62 },
+			platforms: [
+				{ x: 0, y: 492, w: 140, h: 48 },
+				{ x: 170, y: 455, w: 110, h: 20, accent: true },
+				{ x: 310, y: 380, w: 90, h: 20, accent: true },
+				{ x: 430, y: 445, w: 95, h: 20, accent: true },
+				{ x: 555, y: 360, w: 82, h: 20, accent: true },
+				{ x: 670, y: 425, w: 85, h: 20, accent: true },
+				{ x: 785, y: 340, w: 72, h: 20, accent: true },
+				{ x: 880, y: 470, w: 80, h: 70 },
+			],
+			tokens: [
+				{ x: 194, y: 416, w: 59, h: 24, label: 'PLAN', color: TOKEN_COLORS[0] },
+				{ x: 326, y: 341, w: 59, h: 24, label: 'CODE', color: TOKEN_COLORS[1] },
+				{ x: 564, y: 321, w: 64, h: 24, label: 'BUILD', color: TOKEN_COLORS[2] },
+				{ x: 786, y: 301, w: 70, h: 24, label: 'REPEAT', color: TOKEN_COLORS[3] },
+			],
+			bugs: [
+				{ x: 246, y: 438, w: 24, h: 17, minX: 178, maxX: 248, speed: 82, direction: -1 },
+				{ x: 444, y: 428, w: 24, h: 17, minX: 438, maxX: 493, speed: 96, direction: 1 },
+				{ x: 710, y: 408, w: 24, h: 17, minX: 678, maxX: 723, speed: 106, direction: -1 },
+				{ x: 805, y: 323, w: 24, h: 17, minX: 793, maxX: 825, speed: 112, direction: 1 },
+			],
+		},
+		{
+			name: 'Hard',
+			spawn: { x: 30, y: 452 },
+			terminal: { x: 900, y: 408, w: 48, h: 62 },
+			platforms: [
+				{ x: 0, y: 492, w: 125, h: 48 },
+				{ x: 155, y: 445, w: 95, h: 20, accent: true },
+				{ x: 280, y: 365, w: 78, h: 20, accent: true },
+				{ x: 390, y: 430, w: 82, h: 20, accent: true },
+				{ x: 505, y: 345, w: 72, h: 20, accent: true },
+				{ x: 610, y: 420, w: 78, h: 20, accent: true },
+				{ x: 720, y: 335, w: 70, h: 20, accent: true },
+				{ x: 820, y: 415, w: 55, h: 20, accent: true },
+				{ x: 895, y: 470, w: 65, h: 70 },
+			],
+			tokens: [
+				{ x: 289, y: 326, w: 59, h: 24, label: 'PLAN', color: TOKEN_COLORS[0] },
+				{ x: 397, y: 391, w: 59, h: 24, label: 'CODE', color: TOKEN_COLORS[1] },
+				{ x: 509, y: 306, w: 64, h: 24, label: 'BUILD', color: TOKEN_COLORS[2] },
+				{ x: 720, y: 296, w: 70, h: 24, label: 'REPEAT', color: TOKEN_COLORS[3] },
+			],
+			bugs: [
+				{ x: 214, y: 428, w: 24, h: 17, minX: 163, maxX: 218, speed: 90, direction: -1 },
+				{ x: 402, y: 413, w: 24, h: 17, minX: 398, maxX: 440, speed: 104, direction: 1 },
+				{ x: 650, y: 403, w: 24, h: 17, minX: 618, maxX: 656, speed: 116, direction: -1 },
+				{ x: 746, y: 318, w: 24, h: 17, minX: 728, maxX: 758, speed: 124, direction: 1 },
+				{ x: 836, y: 398, w: 24, h: 17, minX: 826, maxX: 843, speed: 132, direction: -1 },
+			],
+		},
+	];
 
 	const roots = document.querySelectorAll<HTMLElement>('[data-midnight-deploy]');
 
@@ -90,45 +224,42 @@ import { RotateCcw, X } from '@lucide/astro';
 		const openButton = host?.querySelector<HTMLButtonElement>('[data-game-open]');
 		const canvas = root.querySelector<HTMLCanvasElement>('[data-game-canvas]');
 		const startScreen = root.querySelector<HTMLElement>('[data-start-screen]');
+		const levelScreen = root.querySelector<HTMLElement>('[data-level-screen]');
 		const winScreen = root.querySelector<HTMLElement>('[data-win-screen]');
 		const startButton = root.querySelector<HTMLButtonElement>('[data-game-start]');
-		const restartButtons = root.querySelectorAll<HTMLButtonElement>('[data-game-restart], [data-win-restart]');
+		const restartButton = root.querySelector<HTMLButtonElement>('[data-game-restart]');
+		const playAgainButton = root.querySelector<HTMLButtonElement>('[data-win-restart]');
+		const continueButton = root.querySelector<HTMLButtonElement>('[data-level-continue]');
 		const closeButtons = root.querySelectorAll<HTMLButtonElement>('[data-game-close], [data-win-close]');
+		const levelDisplay = root.querySelector<HTMLElement>('[data-game-level]');
 		const timeDisplay = root.querySelector<HTMLElement>('[data-game-time]');
-		const finalTimeDisplay = root.querySelector<HTMLElement>('[data-final-time]');
 		const progressDisplay = root.querySelector<HTMLElement>('[data-game-progress]');
 		const terminalDisplay = root.querySelector<HTMLElement>('[data-terminal-state]');
 		const messageDisplay = root.querySelector<HTMLElement>('[data-game-message]');
+		const levelCompleteEyebrow = root.querySelector<HTMLElement>('[data-level-complete-eyebrow]');
+		const levelCompleteTitle = root.querySelector<HTMLElement>('[data-level-complete-title]');
+		const levelTimeDisplay = root.querySelector<HTMLElement>('[data-level-time]');
+		const nextLevelDisplay = root.querySelector<HTMLElement>('[data-next-level]');
+		const resultTimeDisplays = root.querySelectorAll<HTMLElement>('[data-result-time]');
+		const totalTimeDisplay = root.querySelector<HTMLElement>('[data-total-time]');
 		const context = canvas?.getContext('2d');
 
-		if (!host || !gameView || !heroContent || !openButton || !canvas || !context || !startScreen || !winScreen || !startButton) continue;
+		if (!host || !gameView || !heroContent || !openButton || !canvas || !context || !startScreen || !levelScreen || !winScreen || !startButton || !restartButton || !playAgainButton || !continueButton) continue;
 
 		const WIDTH = 960;
 		const HEIGHT = 540;
 		const TOTAL_TOKENS = 4;
-		const spawn = { x: 45, y: 452 };
+		let currentLevelIndex = 0;
+		let activeLevel = LEVELS[currentLevelIndex];
+		let spawn: Point = { ...activeLevel.spawn };
+		let terminal: Rectangle = { ...activeLevel.terminal };
+		let platforms: Platform[] = activeLevel.platforms.map((platform) => ({ ...platform }));
+		let tokens: Token[] = activeLevel.tokens.map((token) => ({ ...token, collected: false }));
+		let bugs: Bug[] = activeLevel.bugs.map((bug) => ({ ...bug }));
 		const player = { x: spawn.x, y: spawn.y, w: 22, h: 40, vx: 0, vy: 0, grounded: false };
-		const terminal: Rectangle = { x: 887, y: 408, w: 48, h: 62 };
-		const platforms: Platform[] = [
-			{ x: 0, y: 492, w: 185, h: 48 },
-			{ x: 215, y: 446, w: 150, h: 20, accent: true },
-			{ x: 397, y: 382, w: 124, h: 20, accent: true },
-			{ x: 548, y: 446, w: 157, h: 20, accent: true },
-			{ x: 737, y: 362, w: 105, h: 20, accent: true },
-			{ x: 865, y: 470, w: 95, h: 70 },
-		];
-		const tokens: Token[] = [
-			{ x: 260, y: 407, w: 59, h: 24, label: 'PLAN', color: '#72d9ff', collected: false },
-			{ x: 430, y: 343, w: 59, h: 24, label: 'CODE', color: '#5cf0b5', collected: false },
-			{ x: 592, y: 407, w: 64, h: 24, label: 'BUILD', color: '#ffd166', collected: false },
-			{ x: 755, y: 323, w: 70, h: 24, label: 'REPEAT', color: '#a78bfa', collected: false },
-		];
-		const bugs: Bug[] = [
-			{ x: 242, y: 429, w: 24, h: 17, minX: 224, maxX: 332, speed: 62, direction: 1 },
-			{ x: 648, y: 429, w: 24, h: 17, minX: 558, maxX: 672, speed: 76, direction: -1 },
-		];
 		const input = { left: false, right: false, jump: false, jumpQueued: false };
 		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+		let levelTimes: number[] = [];
 		let isOpen = false;
 		let started = false;
 		let won = false;
@@ -149,6 +280,7 @@ import { RotateCcw, X } from '@lucide/astro';
 		const collectedCount = () => tokens.filter((token) => token.collected).length;
 
 		const updateHud = () => {
+			if (levelDisplay) levelDisplay.textContent = `${currentLevelIndex + 1} / ${LEVELS.length} · ${activeLevel.name.toUpperCase()}`;
 			if (timeDisplay) timeDisplay.textContent = formatTime(elapsed);
 			if (progressDisplay) progressDisplay.textContent = `${collectedCount()} / ${TOTAL_TOKENS}`;
 			const unlocked = collectedCount() === TOTAL_TOKENS;
@@ -176,53 +308,90 @@ import { RotateCcw, X } from '@lucide/astro';
 			if (announce && messageDisplay) messageDisplay.textContent = 'Bug found. Respawning — collected tokens kept.';
 		};
 
-		const resetGame = () => {
+		const loadLevel = (levelIndex: number) => {
 			cancelAnimationFrame(animationFrame);
 			animationFrame = 0;
+			currentLevelIndex = Math.max(0, Math.min(LEVELS.length - 1, levelIndex));
+			activeLevel = LEVELS[currentLevelIndex] ?? LEVELS[0];
+			spawn = { ...activeLevel.spawn };
+			terminal = { ...activeLevel.terminal };
+			platforms = activeLevel.platforms.map((platform) => ({ ...platform }));
+			tokens = activeLevel.tokens.map((token) => ({ ...token, collected: false }));
+			bugs = activeLevel.bugs.map((bug) => ({ ...bug }));
 			started = false;
 			won = false;
 			elapsed = 0;
 			lastFrame = 0;
-			tokens.forEach((token) => { token.collected = false; });
-			bugs[0].x = 242;
-			bugs[0].direction = 1;
-			bugs[1].x = 648;
-			bugs[1].direction = -1;
 			resetPlayer(false);
-			startScreen.hidden = false;
+			startScreen.hidden = true;
+			levelScreen.hidden = true;
 			winScreen.hidden = true;
-			if (messageDisplay) messageDisplay.textContent = 'Press Start game when you are ready.';
+			canvas.setAttribute('aria-label', `Midnight Deploy level ${currentLevelIndex + 1} of ${LEVELS.length}, ${activeLevel.name} difficulty`);
 			updateHud();
 			draw();
 		};
 
-		const startGame = () => {
+		const resetRun = (showStartScreen = true) => {
+			levelTimes = [];
+			loadLevel(0);
+			startScreen.hidden = !showStartScreen;
+			if (messageDisplay) messageDisplay.textContent = showStartScreen ? 'Press Start game when you are ready.' : 'Level 1: Easy. Deployment in progress.';
+		};
+
+		const startCurrentLevel = () => {
 			if (!isOpen) return;
 			started = true;
 			won = false;
 			startScreen.hidden = true;
+			levelScreen.hidden = true;
 			winScreen.hidden = true;
 			lastFrame = 0;
-			if (messageDisplay) messageDisplay.textContent = 'Deployment in progress.';
+			if (messageDisplay) messageDisplay.textContent = `Level ${currentLevelIndex + 1}: ${activeLevel.name}. Deployment in progress.`;
 			canvas.focus({ preventScroll: true });
 			startLoop();
 		};
 
-		const restartGame = () => {
-			resetGame();
-			startGame();
+		const restartCurrentLevel = () => {
+			loadLevel(currentLevelIndex);
+			startCurrentLevel();
 		};
 
-		const finishGame = () => {
-			won = true;
+		const finishLevel = () => {
+			started = false;
 			cancelAnimationFrame(animationFrame);
 			animationFrame = 0;
 			clearInput();
-			if (finalTimeDisplay) finalTimeDisplay.textContent = formatTime(elapsed);
-			if (messageDisplay) messageDisplay.textContent = `Deployment complete in ${formatTime(elapsed)}.`;
-			winScreen.hidden = false;
-			root.querySelector<HTMLButtonElement>('[data-win-restart]')?.focus({ preventScroll: true });
+			levelTimes[currentLevelIndex] = elapsed;
+
+			if (currentLevelIndex < LEVELS.length - 1) {
+				const nextLevel = LEVELS[currentLevelIndex + 1];
+				if (levelCompleteEyebrow) levelCompleteEyebrow.textContent = `LEVEL ${currentLevelIndex + 1} COMPLETE`;
+				if (levelCompleteTitle) levelCompleteTitle.textContent = `${activeLevel.name} cleared.`;
+				if (levelTimeDisplay) levelTimeDisplay.textContent = formatTime(elapsed);
+				if (nextLevelDisplay) nextLevelDisplay.textContent = nextLevel.name;
+				continueButton.textContent = `Continue to Level ${currentLevelIndex + 2}`;
+				levelScreen.hidden = false;
+				if (messageDisplay) messageDisplay.textContent = `Level ${currentLevelIndex + 1} complete in ${formatTime(elapsed)}. ${nextLevel.name} is next.`;
+				continueButton.focus({ preventScroll: true });
+			} else {
+				won = true;
+				resultTimeDisplays.forEach((display) => {
+					const resultIndex = Number(display.dataset.resultTime);
+					display.textContent = formatTime(levelTimes[resultIndex] ?? 0);
+				});
+				const totalTime = levelTimes.reduce((total, levelTime) => total + levelTime, 0);
+				if (totalTimeDisplay) totalTimeDisplay.textContent = formatTime(totalTime);
+				if (messageDisplay) messageDisplay.textContent = `All four levels complete in ${formatTime(totalTime)}.`;
+				winScreen.hidden = false;
+				playAgainButton.focus({ preventScroll: true });
+			}
 			draw();
+		};
+
+		const continueToNextLevel = () => {
+			if (currentLevelIndex >= LEVELS.length - 1) return;
+			loadLevel(currentLevelIndex + 1);
+			startCurrentLevel();
 		};
 
 		const update = (delta: number) => {
@@ -275,7 +444,10 @@ import { RotateCcw, X } from '@lucide/astro';
 				}
 			}
 
-			if (collectedCount() === TOTAL_TOKENS && intersects(player, terminal)) finishGame();
+			if (collectedCount() === TOTAL_TOKENS && intersects(player, terminal)) {
+				finishLevel();
+				return;
+			}
 			if (player.y > HEIGHT + 80) resetPlayer();
 			updateHud();
 		};
@@ -448,7 +620,7 @@ import { RotateCcw, X } from '@lucide/astro';
 			drawPlayer();
 			context.fillStyle = 'rgba(4, 13, 22, .55)';
 			context.fillRect(0, 0, WIDTH, 28);
-			drawPixelText('NIGHT SHIFT // BUILD 01', 14, 15, '#72d9ff', 11);
+			drawPixelText(`NIGHT SHIFT // LEVEL ${String(currentLevelIndex + 1).padStart(2, '0')} // ${activeLevel.name.toUpperCase()}`, 14, 15, '#72d9ff', 11);
 		};
 
 		const frame = (timestamp: number) => {
@@ -461,7 +633,7 @@ import { RotateCcw, X } from '@lucide/astro';
 			lastFrame = timestamp;
 			update(delta);
 			draw();
-			if (!won) animationFrame = requestAnimationFrame(frame);
+			if (started && !won) animationFrame = requestAnimationFrame(frame);
 		};
 
 		const startLoop = () => {
@@ -500,7 +672,7 @@ import { RotateCcw, X } from '@lucide/astro';
 		};
 
 		openButton.addEventListener('click', () => {
-			resetGame();
+			resetRun();
 			isOpen = true;
 			host.classList.add('is-game-open');
 			heroContent.inert = true;
@@ -510,8 +682,13 @@ import { RotateCcw, X } from '@lucide/astro';
 			openButton.setAttribute('aria-expanded', 'true');
 			startButton.focus({ preventScroll: true });
 		});
-		startButton.addEventListener('click', startGame);
-		restartButtons.forEach((button) => button.addEventListener('click', restartGame));
+		startButton.addEventListener('click', startCurrentLevel);
+		restartButton.addEventListener('click', restartCurrentLevel);
+		continueButton.addEventListener('click', continueToNextLevel);
+		playAgainButton.addEventListener('click', () => {
+			resetRun(false);
+			startCurrentLevel();
+		});
 		closeButtons.forEach((button) => button.addEventListener('click', closeGame));
 		document.addEventListener('visibilitychange', () => {
 			if (document.hidden) {
@@ -562,7 +739,7 @@ import { RotateCcw, X } from '@lucide/astro';
 		});
 
 		canvas.tabIndex = -1;
-		resetGame();
+		resetRun();
 	}
 </script>
 
@@ -589,6 +766,10 @@ import { RotateCcw, X } from '@lucide/astro';
 	.overlay-card h3 { margin: 0 0 13px; color: #edf5ff; font-family: 'Courier New', Courier, monospace; font-size: clamp(19px, 4vw, 28px); text-transform: uppercase; }
 	.overlay-card p:not(.overlay-eyebrow) { margin: 0 auto 22px; color: #b5ccdc; font-size: clamp(12px, 2vw, 14px); line-height: 1.65; }
 	.overlay-card p strong { color: #72d9ff; }
+	.run-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 0 auto 14px; font-family: 'Courier New', Courier, monospace; font-size: 11px; text-align: left; }
+	.run-summary span { display: flex; justify-content: space-between; gap: 10px; padding: 7px 9px; border: 1px solid #214b66; color: #8facbf; }
+	.run-summary strong { color: #72d9ff; }
+	.overlay-card .total-time { margin-bottom: 14px; }
 	.primary-control, .secondary-control { min-height: 40px; padding: 0 18px; border: 1px solid #42a9ff; font-family: 'Courier New', Courier, monospace; font-size: 12px; font-weight: 700; cursor: pointer; }
 	.primary-control { background: #42a9ff; color: #061525; }
 	.primary-control:hover { background: #72d9ff; }
@@ -617,13 +798,20 @@ import { RotateCcw, X } from '@lucide/astro';
 	@media (max-width: 640px) {
 		.game-header { margin-bottom: 10px; }
 		.game-kicker { display: none; }
-		.game-hud { gap: 9px; padding: 8px; font-size: 9px; letter-spacing: .3px; }
+		.game-hud { gap: 6px; padding: 7px 6px; font-size: 8px; letter-spacing: 0; }
 		.terminal-state { font-size: 0; }
-		.terminal-state::after { content: 'LOCKED'; font-size: 9px; }
+		.terminal-state::after { content: 'LOCKED'; font-size: 8px; }
 		.terminal-state.is-ready::after { content: 'READY'; }
 		.game-overlay { padding: 10px; }
 		.overlay-card { padding: 18px 16px; box-shadow: 5px 5px 0 rgba(66, 169, 255, .2); }
 		.overlay-card p:not(.overlay-eyebrow) { margin-bottom: 15px; line-height: 1.45; }
+		.win-screen .overlay-card { padding: 9px 11px; }
+		.win-screen .overlay-eyebrow { margin-bottom: 4px !important; font-size: 8px !important; }
+		.win-screen .overlay-card h3 { margin-bottom: 6px; font-size: 16px; }
+		.run-summary { gap: 4px; margin-bottom: 6px; font-size: 8px; }
+		.run-summary span { gap: 5px; padding: 4px 5px; }
+		.overlay-card .total-time { margin-bottom: 7px !important; font-size: 10px; line-height: 1.2; }
+		.win-screen .primary-control, .win-screen .secondary-control { min-height: 32px; padding-inline: 12px; font-size: 10px; }
 		.game-footer > span { display: none; }
 		.game-footer { justify-content: flex-end; margin-top: 8px; }
 		.touch-controls { margin-top: 9px; }

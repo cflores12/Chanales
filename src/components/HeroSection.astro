@@ -19,7 +19,6 @@ const { profile } = Astro.props;
 			</p>
 			<p class="lede">{profile.heroDescription}</p>
 			<div class="profile-actions">
-				<a class="resume-button" href="#experience">View resume</a>
 				<a class="icon-button" href={`mailto:${profile.email}`} aria-label={`Email ${profile.name}`} title="Email">
 					<Mail size={17} stroke-width="1.7" />
 				</a>
