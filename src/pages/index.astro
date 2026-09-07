@@ -151,7 +151,7 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 	footer { padding: 20px 34px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); color: var(--muted); } footer strong, footer small { display: block; } footer strong { color: var(--text); font-size: 12px; } footer small { font-size: 8px; line-height: 1.5; } .footer-nav { display: flex; gap: 26px; }
 	@media (max-width: 800px) { .site-header { padding: 14px 20px; flex-wrap: wrap; gap: 16px; } .site-header nav { order: 3; width: 100%; margin: 0; justify-content: space-between; gap: 8px; overflow-x: auto; } .header-note { display: none; } .hero { padding: 43px 20px 28px; grid-template-columns: 1fr; gap: 35px; } .hero-art { justify-self: stretch; max-width: none; } .projects-section, .experience-section, .about-panel, .skills-panel, .contact-section { padding-inline: 20px; } .project-grid { grid-template-columns: 1fr; } .split-section, .contact-section { grid-template-columns: 1fr; gap: 0; } .about-panel { border-right: 0; border-bottom: 1px solid var(--line); } .contact-links { margin-top: 25px; } footer { padding-inline: 20px; gap: 18px; align-items: flex-start; } .footer-nav { display: none; } }
 	@media (max-width: 500px) { h1 { font-size: 3.2rem; } .hero-actions { flex-wrap: wrap; } .hero-art { height: 235px; } .timeline-item { grid-template-columns: 1fr; gap: 5px; } .contact-links a { grid-template-columns: 25px 60px 1fr 15px; } .contact-links small { overflow: hidden; text-overflow: ellipsis; } .skills { grid-template-columns: repeat(2, 1fr); } }
-	@media (prefers-reduced-motion: reduce) { :global(*) { scroll-behavior: auto !important; transition-duration: .01ms !important; } .project-card:hover { transform: none; } }
+	@media (prefers-reduced-motion: reduce) { :global(*) { scroll-behavior: auto !important; transition-duration: .01ms !important; } .project-card:hover, .about-portrait-frame:hover { transform: none; } }
 
 	.site-header, .section-frame, footer { width: 100%; max-width: none; padding-inline: max(34px, calc((100% - 1112px) / 2)); }
 	.site-header { min-height: 76px; }
@@ -243,7 +243,8 @@ const techStack = ['C#', 'Blazor', '.NET MAUI', 'JavaScript', 'React', 'Playwrig
 	.about-toolkit ul { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
 	.about-toolkit li { padding: 8px 12px; border: 1px solid var(--line-bright); background: color-mix(in srgb, var(--surface-soft) 62%, transparent); color: var(--text); font-family: 'Courier New', Courier, monospace; font-size: 12px; }
 	.about-portrait-panel { display: grid; align-items: center; padding-left: 26px; border-left: 1px solid var(--line-bright); }
-	.about-portrait-frame { position: relative; width: 100%; max-width: 420px; aspect-ratio: 4 / 5; overflow: hidden; border: 1px solid var(--line-bright); background: var(--surface-soft); }
+	.about-portrait-frame { position: relative; width: 100%; max-width: 420px; aspect-ratio: 4 / 5; overflow: hidden; border: 1px solid var(--line-bright); background: var(--surface-soft); transition: transform .2s, border-color .2s; }
+	.about-portrait-frame:hover { transform: translateY(-4px); border-color: var(--blue); }
 	.about-portrait-frame .about-portrait { display: block; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center bottom; transform: scale(1.28); transform-origin: 55% 100%; }
 	:global(body) { line-height: 1.5; }
 	nav a, .header-note, .footer-nav a { font-size: 13px; }

@@ -439,7 +439,7 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 			context.fillRect(x + 13, y + 9, 3, 3);
 		};
 
-		function draw() {
+		const draw = () => {
 			context.imageSmoothingEnabled = false;
 			context.clearRect(0, 0, WIDTH, HEIGHT);
 			drawBackground();
@@ -451,7 +451,7 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 			context.fillStyle = 'rgba(4, 13, 22, .55)';
 			context.fillRect(0, 0, WIDTH, 28);
 			drawPixelText('NIGHT SHIFT // BUILD 01', 14, 15, '#72d9ff', 11);
-		}
+		};
 
 		const frame = (timestamp: number) => {
 			if (!dialog.open || !started || won || document.hidden) {
@@ -466,11 +466,11 @@ import { Gamepad2, RotateCcw, X } from '@lucide/astro';
 			if (!won) animationFrame = requestAnimationFrame(frame);
 		};
 
-		function startLoop() {
+		const startLoop = () => {
 			if (animationFrame || !dialog.open || !started || won || document.hidden) return;
 			lastFrame = 0;
 			animationFrame = requestAnimationFrame(frame);
-		}
+		};
 
 		const closeGame = () => {
 			if (dialog.open) dialog.close();

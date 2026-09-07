@@ -20,6 +20,8 @@
     "esbuild": true
   },
   "devDependencies": {
-    "@iconify-json/simple-icons": "^1.2.94"
+    "@astrojs/check": "^0.9.10",
+    "@iconify-json/simple-icons": "^1.2.94",
+    "typescript": "^6.0.3"
   }
 }
