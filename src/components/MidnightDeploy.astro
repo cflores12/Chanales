@@ -505,11 +505,27 @@ import { RotateCcw, X } from '@lucide/astro';
 			}
 			context.globalAlpha = 1;
 
+			// Build the crescent in stepped rows so it reads clearly while staying pixel-art sharp.
+			const moonRows = [
+				{ x: 787, y: 45, w: 18 },
+				{ x: 778, y: 54, w: 36 },
+				{ x: 769, y: 63, w: 54 },
+				{ x: 769, y: 72, w: 54 },
+				{ x: 769, y: 81, w: 54 },
+				{ x: 769, y: 90, w: 54 },
+				{ x: 778, y: 99, w: 36 },
+				{ x: 787, y: 108, w: 18 },
+			];
 			context.fillStyle = '#d9f4ff';
-			context.fillRect(778, 54, 45, 9);
-			context.fillRect(769, 63, 54, 36);
+			for (const row of moonRows) context.fillRect(row.x, row.y, row.w, 9);
+
+			// Offset the cutout to form tapered tips instead of the previous L shape.
 			context.fillStyle = '#06101e';
-			context.fillRect(769, 54, 25, 36);
+			context.fillRect(799, 54, 15, 9);
+			context.fillRect(796, 63, 27, 9);
+			context.fillRect(793, 72, 30, 18);
+			context.fillRect(796, 90, 27, 9);
+			context.fillRect(799, 99, 15, 9);
 
 			const buildings = [
 				{ x: 0, y: 235, w: 112, h: 210 }, { x: 118, y: 284, w: 85, h: 161 },
