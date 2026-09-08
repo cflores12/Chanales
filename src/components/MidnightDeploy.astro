@@ -261,7 +261,8 @@ import { RotateCcw, X } from '@lucide/astro';
 		let playerFacing: -1 | 1 = 1;
 		const playerSpriteSheet = new Image();
 		playerSpriteSheet.decoding = 'async';
-		playerSpriteSheet.src = `${import.meta.env.BASE_URL}sprites/midnight-deploy-player-v3.png`;
+		const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+		playerSpriteSheet.src = `${baseUrl}sprites/midnight-deploy-player-v3.png`;
 		const playerSprites = {
 			idle: { sourceX: 9, sourceY: 6, sourceWidth: 26, sourceHeight: 49 },
 			walk1: { sourceX: 46, sourceY: 7, sourceWidth: 28, sourceHeight: 49 },
