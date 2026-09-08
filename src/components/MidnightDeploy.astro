@@ -258,6 +258,17 @@ import { RotateCcw, X } from '@lucide/astro';
 		let bugs: Bug[] = activeLevel.bugs.map((bug) => ({ ...bug }));
 		const player = { x: spawn.x, y: spawn.y, w: 22, h: 40, vx: 0, vy: 0, grounded: false };
 		const input = { left: false, right: false, jump: false, jumpQueued: false };
+		let playerFacing: -1 | 1 = 1;
+		const playerSpriteSheet = new Image();
+		playerSpriteSheet.decoding = 'async';
+		playerSpriteSheet.src = `${import.meta.env.BASE_URL}sprites/midnight-deploy-player-v3.png`;
+		const playerSprites = {
+			idle: { sourceX: 9, sourceY: 6, sourceWidth: 26, sourceHeight: 49 },
+			walk1: { sourceX: 46, sourceY: 7, sourceWidth: 28, sourceHeight: 49 },
+			walk2: { sourceX: 85, sourceY: 7, sourceWidth: 27, sourceHeight: 49 },
+			jump: { sourceX: 123, sourceY: 5, sourceWidth: 33, sourceHeight: 49 },
+			hit: { sourceX: 164, sourceY: 6, sourceWidth: 31, sourceHeight: 49 },
+		};
 		const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 		let levelTimes: number[] = [];
 		let isOpen = false;
@@ -267,6 +278,7 @@ import { RotateCcw, X } from '@lucide/astro';
 		let lastFrame = 0;
 		let animationFrame = 0;
 		let respawnGlow = 0;
+		let hitReaction = 0;
 
 		const intersects = (a: Rectangle, b: Rectangle) =>
 			a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
@@ -303,9 +315,18 @@ import { RotateCcw, X } from '@lucide/astro';
 			player.vx = 0;
 			player.vy = 0;
 			player.grounded = false;
+			hitReaction = 0;
 			respawnGlow = reducedMotion.matches ? 0 : 0.55;
 			clearInput();
 			if (announce && messageDisplay) messageDisplay.textContent = 'Bug found. Respawning — collected tokens kept.';
+		};
+
+		const startHitReaction = () => {
+			hitReaction = reducedMotion.matches ? 0.12 : 0.32;
+			player.vx = 0;
+			player.vy = 0;
+			clearInput();
+			if (messageDisplay) messageDisplay.textContent = 'Bug found. Respawning — collected tokens kept.';
 		};
 
 		const loadLevel = (levelIndex: number) => {
@@ -397,9 +418,16 @@ import { RotateCcw, X } from '@lucide/astro';
 		const update = (delta: number) => {
 			elapsed += delta;
 			respawnGlow = Math.max(0, respawnGlow - delta);
+			if (hitReaction > 0) {
+				hitReaction = Math.max(0, hitReaction - delta);
+				if (hitReaction === 0) resetPlayer(false);
+				updateHud();
+				return;
+			}
 
 			const moveDirection = Number(input.right) - Number(input.left);
 			player.vx = moveDirection * 220;
+			if (moveDirection !== 0) playerFacing = moveDirection < 0 ? -1 : 1;
 			if (input.jumpQueued && player.grounded) {
 				player.vy = -520;
 				player.grounded = false;
@@ -431,7 +459,7 @@ import { RotateCcw, X } from '@lucide/astro';
 					bug.direction *= -1;
 				}
 				if (intersects(player, bug)) {
-					resetPlayer();
+					startHitReaction();
 					return;
 				}
 			}
@@ -592,21 +620,35 @@ import { RotateCcw, X } from '@lucide/astro';
 				context.fillRect(x - 8, y - 8, player.w + 16, player.h + 16);
 				context.globalAlpha = 1;
 			}
-			context.fillStyle = '#72d9ff';
-			context.fillRect(x + 4, y, 14, 6);
-			context.fillRect(x + 1, y + 6, 20, 13);
-			context.fillStyle = '#f3c7a2';
-			context.fillRect(x + 5, y + 7, 12, 9);
-			context.fillStyle = '#0b2133';
-			context.fillRect(x + 4, y + 19, 15, 13);
-			context.fillStyle = '#42a9ff';
-			context.fillRect(x, y + 20, 5, 12);
-			context.fillRect(x + 18, y + 20, 4, 12);
-			context.fillStyle = '#a7bfd0';
-			context.fillRect(x + 4, y + 32, 6, 8);
-			context.fillRect(x + 14, y + 32, 6, 8);
-			context.fillStyle = '#06101e';
-			context.fillRect(x + 13, y + 9, 3, 3);
+
+			const isJumping = !player.grounded && Math.abs(player.vy) > 1;
+			const isWalking = player.grounded && Math.abs(player.vx) > 1;
+			const walkFrame = Math.floor(elapsed * 9) % 2 === 0 ? playerSprites.walk1 : playerSprites.walk2;
+			const spriteFrame = hitReaction > 0 ? playerSprites.hit : isJumping ? playerSprites.jump : isWalking ? walkFrame : playerSprites.idle;
+			const { sourceX, sourceY, sourceWidth, sourceHeight } = spriteFrame;
+
+			if (!playerSpriteSheet.complete || playerSpriteSheet.naturalWidth === 0) {
+				context.fillStyle = '#344f73';
+				context.fillRect(x + 2, y + 3, player.w - 4, player.h - 3);
+				return;
+			}
+
+			context.save();
+			context.translate(x + player.w / 2, 0);
+			context.scale(playerFacing, 1);
+			context.imageSmoothingEnabled = false;
+			context.drawImage(
+				playerSpriteSheet,
+				sourceX,
+				sourceY,
+				sourceWidth,
+				sourceHeight,
+				-sourceWidth / 2,
+				y + player.h - sourceHeight,
+				sourceWidth,
+				sourceHeight,
+			);
+			context.restore();
 		};
 
 		const draw = () => {

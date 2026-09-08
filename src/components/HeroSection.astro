@@ -243,6 +243,12 @@ const base = import.meta.env.BASE_URL;
 		transition-delay: 0s;
 	}
 
+	@media (min-width: 1100px) {
+		.hero.is-game-open {
+			padding-inline: max(34px, calc((100% - 1240px) / 2));
+		}
+	}
+
 	.midnight-trigger {
 		display: inline-grid;
 		place-items: center;
