@@ -85,4 +85,15 @@ npm run build
 npm run preview
 ```
 
-The generated static site is written to `dist/` and can be deployed to any static hosting provider.
+The generated static site is written to `dist/`.
+
+## Deployment
+
+Pushes to `main` are automatically deployed to [Cloudflare Pages](https://chanalesflores.pages.dev) by the GitHub Actions workflow in `.github/workflows/deploy.yml`.
+
+The repository must define these GitHub Actions secrets:
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN` with the **Account > Cloudflare Pages > Edit** permission
+
+The workflow builds the site with Node.js 22 and publishes `dist/` to the `chanalesflores` Cloudflare Pages project.
